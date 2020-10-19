@@ -1,13 +1,16 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_cluster_manager/google_maps_cluster_manager.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:logger/logger.dart';
+
 import 'marker-service.dart';
+import 'model/map-marker.dart';
+import 'model/map-point.dart';
 import 'page.dart';
-import 'place.dart';
 
 class ClusterMap extends GoogleMapExampleAppPage {
   ClusterMap() : super(const Icon(Icons.map), 'Cluster');
@@ -25,7 +28,7 @@ class MapSample extends StatefulWidget {
 
 class MapSampleState extends State<MapSample> {
   var logger = Logger();
-  ClusterManager _manager;
+  ClusterManager _clusterManager;
 
   Completer<GoogleMapController> _controller = Completer();
 
@@ -56,21 +59,22 @@ class MapSampleState extends State<MapSample> {
   void updateMarkers() async {
     while (true) {
       await new Future.delayed(const Duration(milliseconds: 3000));
-      logger.i('обновили точки');
-      _manager.setItems(_markerService.getItems());
+      // logger.i('обновили точки');
+      // _manager.updateMarkers(_markerService.getMarkers());
+      _clusterManager.setItems(_markerService.getItems());
       // _manager.updateMarkers()
     }
   }
 
   @override
   void initState() {
-    _manager = _initClusterManager();
+    _clusterManager = _initClusterManager();
     updateMarkers();
     super.initState();
   }
 
   ClusterManager _initClusterManager() {
-    return ClusterManager<Place>([], _updateMarkers,
+    return ClusterManager<MapPoint>([], _updateMarkers,
         markerBuilder: _markerBuilder, initialZoom: _parisCameraPosition.zoom, stopClusteringZoom: 17.0);
   }
 
@@ -78,6 +82,7 @@ class MapSampleState extends State<MapSample> {
     print('Updated ${markers.length} markers');
     setState(() {
       this.markers = markers;
+
     });
   }
 
@@ -85,15 +90,17 @@ class MapSampleState extends State<MapSample> {
   Widget build(BuildContext context) {
     return new Scaffold(
       body: GoogleMap(
+          mapToolbarEnabled: false,
           mapType: MapType.normal,
           initialCameraPosition: _parisCameraPosition,
+          // markers: HashSet.of(markersMap.values),
           markers: markers,
           onMapCreated: (GoogleMapController controller) {
             _controller.complete(controller);
-            _manager.setMapController(controller);
+            _clusterManager.setMapController(controller);
           },
-          onCameraMove: _manager.onCameraMove,
-          onCameraIdle: _manager.updateMap),
+          onCameraMove: _clusterManager.onCameraMove,
+          onCameraIdle: _clusterManager.updateMap),
       // floatingActionButton: FloatingActionButton(
       //   onPressed: () {
       //     _manager.setItems(<ClusterItem<Place>>[
@@ -107,29 +114,36 @@ class MapSampleState extends State<MapSample> {
     );
   }
 
-  Future<Marker> Function(Cluster<Place>) get _markerBuilder => (cluster) async {
-        final MarkerId markerId = MarkerId(cluster.getId());
+  Future<Marker> Function(Cluster<MapPoint>) get _markerBuilder => (cluster) async {
+        final MarkerId markerId = cluster.isMultiple ? MarkerId(cluster.getId()) : MarkerId(cluster.items.first.id);
         return Marker(
           markerId: markerId,
           position: cluster.location,
-          infoWindow: InfoWindow(
-              title: "My Name",
-              onTap: () {
-                print("Info win is TAped");
-              },
-              snippet: '*'),
+          infoWindow: cluster.isMultiple ? null : getInfoWindow(cluster),
           onTap: () {
-            print('---- $cluster');
-            cluster.items.forEach((p) => print(p));
-            _onMarkerTapped(markerId);
+            if (!cluster.isMultiple) {
+              _onMarkerTapped(cluster);
+            }
           },
           icon: await _getMarkerBitmap(cluster.isMultiple ? 125 : 75,
               text: cluster.isMultiple ? cluster.count.toString() : null),
         );
       };
 
-  void _onMarkerTapped(MarkerId markerId) {
-    print('--marker-- $markerId');
+  InfoWindow getInfoWindow(Cluster<MapPoint> cluster) {
+    var point = cluster.items.first;
+    return InfoWindow(
+        title: "My Name is " + point.name,
+        onTap: () {
+          print("Info win is TAped");
+        },
+        snippet: '*');
+  }
+
+  void _onMarkerTapped(Cluster<MapPoint> cluster) {
+    var name = cluster.items.first.name;
+    // point.name
+    print('-- marker-- $name');
   }
 
   Future<BitmapDescriptor> _getMarkerBitmap(int size, {String text}) async {
