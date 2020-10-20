@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/cluster-map.dart';
+import 'package:flutter_app/views/cluster-map.dart';
 
 void main() {
   runApp(MyApp());

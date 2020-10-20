@@ -6,9 +6,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 
-import 'dto/point-dto.dart';
-import 'model/map-point.dart';
-import 'place.dart';
+import '../dto/point-dto.dart';
+import '../model/map-point.dart';
+import '../place.dart';
 
 class MarkerService {
   final List<ClusterItem<MapPoint>> _items = [];
@@ -30,7 +30,6 @@ class MarkerService {
   void doUpdate() async {
     while (true) {
       try {
-        new MapPoint("", "");
         await new Future.delayed(const Duration(milliseconds: 3000));
         var response = await http.get("http://192.168.31.154:8010/api/v1/point");
         if (response.statusCode == 200) {
@@ -46,10 +45,10 @@ class MarkerService {
           //     .toSet();
           // _markers.addAll(markers);
         } else {
-          logger.w('Unable to fetch points from the REST API. code: ${response.statusCode}');
+          logger.w('Unable to fetch points from the Point Service. code: ${response.statusCode}');
         }
       } catch (e) {
-        logger.e(e);
+        logger.w("Point Service is unreachable ", e);
       }
     }
   }

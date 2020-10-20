@@ -1,9 +1,9 @@
 class MapPoint {
-  String id;
+  String uuid;
   String name;
   Sex sex;
 
-  MapPoint(this.id, this.name, {this.sex = Sex.NONE});
+  MapPoint(this.uuid, this.name, {this.sex = Sex.NONE});
 }
 
 enum Sex { MAN, FEMALE, NONE }

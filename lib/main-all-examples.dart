@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/cluster-map.dart';
+import 'package:flutter_app/views/cluster-map.dart';
+import 'views/chat-list.dart';
 import 'map_coordinates.dart';
 import 'map_ui.dart';
 import 'marker_icons.dart';
@@ -62,5 +63,12 @@ class MapsDemo extends StatelessWidget {
 }
 
 void main() {
-  runApp(MaterialApp(home: MapsDemo()));
+  runApp(MaterialApp(
+      initialRoute: '/',
+      routes: {
+        '/':(BuildContext context) => MapsDemo(),
+        '/map':(BuildContext context) => ClusterMap(),
+        '/chat-list':(BuildContext context) => ChatList(),
+      }
+  ));
 }

@@ -7,10 +7,10 @@ import 'package:google_maps_cluster_manager/google_maps_cluster_manager.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:logger/logger.dart';
 
-import 'marker-service.dart';
-import 'model/map-marker.dart';
-import 'model/map-point.dart';
-import 'page.dart';
+import '../service/marker-service.dart';
+import '../model/map-marker.dart';
+import '../model/map-point.dart';
+import '../page.dart';
 
 class ClusterMap extends GoogleMapExampleAppPage {
   ClusterMap() : super(const Icon(Icons.map), 'Cluster');
@@ -82,18 +82,17 @@ class MapSampleState extends State<MapSample> {
     print('Updated ${markers.length} markers');
     setState(() {
       this.markers = markers;
-
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      body: GoogleMap(
+        body: Stack(children: <Widget>[
+      GoogleMap(
           mapToolbarEnabled: false,
           mapType: MapType.normal,
           initialCameraPosition: _parisCameraPosition,
-          // markers: HashSet.of(markersMap.values),
           markers: markers,
           onMapCreated: (GoogleMapController controller) {
             _controller.complete(controller);
@@ -101,21 +100,44 @@ class MapSampleState extends State<MapSample> {
           },
           onCameraMove: _clusterManager.onCameraMove,
           onCameraIdle: _clusterManager.updateMap),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     _manager.setItems(<ClusterItem<Place>>[
-      //       for (int i = 0; i < 30; i++)
-      //         ClusterItem<Place>(LatLng(48.858265 + i * 0.01, 2.350107),
-      //             item: Place(name: 'New Place ${DateTime.now()}'))
-      //     ]);
-      //   },
-      //   child: Icon(Icons.update),
-      // ),
-    );
+      Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Align(
+          alignment: Alignment.topRight,
+          child: FloatingActionButton(
+            onPressed: () => Navigator.pushNamed(context, '/chat-list'),
+            materialTapTargetSize: MaterialTapTargetSize.padded,
+            backgroundColor: Colors.orange,
+            child: const Icon(Icons.forum, size: 36.0),
+          ),
+        ),
+      ),
+    ]));
+
+    // return new Scaffold(
+    //   body: GoogleMap(
+    //       mapToolbarEnabled: false,
+    //       mapType: MapType.normal,
+    //       initialCameraPosition: _parisCameraPosition,
+    //       markers: markers,
+    //       onMapCreated: (GoogleMapController controller) {
+    //         _controller.complete(controller);
+    //         _clusterManager.setMapController(controller);
+    //       },
+    //       onCameraMove: _clusterManager.onCameraMove,
+    //       onCameraIdle: _clusterManager.updateMap),
+    //   floatingActionButton: FloatingActionButton(
+    //     onPressed: () {
+    //       print("FloatingActionButton is pressed  v!!");
+    //     },
+    //     child: Icon(Icons.update),
+    //   ),
+    //   floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
+    // );
   }
 
   Future<Marker> Function(Cluster<MapPoint>) get _markerBuilder => (cluster) async {
-        final MarkerId markerId = cluster.isMultiple ? MarkerId(cluster.getId()) : MarkerId(cluster.items.first.id);
+        final MarkerId markerId = cluster.isMultiple ? MarkerId(cluster.getId()) : MarkerId(cluster.items.first.uuid);
         return Marker(
           markerId: markerId,
           position: cluster.location,
