@@ -10,21 +10,21 @@ import '../model/map-point.dart';
 import '../page.dart';
 import '../service/marker-service.dart';
 
-class ClusterMap extends GoogleMapExampleAppPage {
-  ClusterMap() : super(const Icon(Icons.map), 'Cluster');
+class MapView extends GoogleMapExampleAppPage {
+  MapView() : super(const Icon(Icons.map), 'Cluster');
 
   @override
   Widget build(BuildContext context) {
-    return MapSample();
+    return MapWidget();
   }
 }
 
-class MapSample extends StatefulWidget {
+class MapWidget extends StatefulWidget {
   @override
-  State<MapSample> createState() => MapSampleState();
+  State<MapWidget> createState() => MapWidgetState();
 }
 
-class MapSampleState extends State<MapSample> with WidgetsBindingObserver {
+class MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
   var logger = Logger();
   ClusterManager _clusterManager;
 
@@ -41,7 +41,6 @@ class MapSampleState extends State<MapSample> with WidgetsBindingObserver {
   void updateMarkers() async {
     while (true) {
       await new Future.delayed(const Duration(milliseconds: 3000));
-      // if (ModalRoute.of(context).isCurrent) {
       if (isActive()) {
         await _markerService.doUpdate();
         _clusterManager.setItems(_markerService.getItems());
@@ -49,11 +48,9 @@ class MapSampleState extends State<MapSample> with WidgetsBindingObserver {
     }
   }
 
-  bool isActive(){
+  bool isActive() {
     return (_notification == null || _notification.index == 0) && ModalRoute.of(context).isCurrent;
   }
-
-
 
   @override
   void initState() {
@@ -105,9 +102,9 @@ class MapSampleState extends State<MapSample> with WidgetsBindingObserver {
           onCameraMove: _clusterManager.onCameraMove,
           onCameraIdle: _clusterManager.updateMap),
       Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(40.0),
         child: Align(
-          alignment: Alignment.topRight,
+          alignment: Alignment.bottomLeft,
           child: FloatingActionButton(
             onPressed: () => Navigator.pushNamed(context, '/chat-list'),
             materialTapTargetSize: MaterialTapTargetSize.padded,
@@ -139,10 +136,10 @@ class MapSampleState extends State<MapSample> with WidgetsBindingObserver {
     var point = cluster.items.first;
     return InfoWindow(
         title: "My Name is " + point.name,
+        snippet: '*',
         onTap: () {
-          print("Info win is TAped");
-        },
-        snippet: '*');
+          Navigator.pushNamed(context, '/chat');
+        });
   }
 
   void _onMarkerTapped(Cluster<MapPoint> cluster) {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/views/cluster-map.dart';
-import 'views/chat-list.dart';
+import 'package:flutter_app/views/map-view.dart';
+import 'views/chat-list-view.dart';
 import 'map_coordinates.dart';
 import 'map_ui.dart';
 import 'marker_icons.dart';
@@ -20,7 +20,7 @@ import 'scrolling_map.dart';
 import 'snapshot.dart';
 
 final List<GoogleMapExampleAppPage> _allPages = <GoogleMapExampleAppPage>[
-  ClusterMap(),
+  MapView(),
   MapUiPage(),
   MapCoordinatesPage(),
   MapClickPage(),
@@ -67,8 +67,8 @@ void main() {
       initialRoute: '/',
       routes: {
         '/':(BuildContext context) => MapsDemo(),
-        '/map':(BuildContext context) => ClusterMap(),
-        '/chat-list':(BuildContext context) => ChatList(),
+        '/map':(BuildContext context) => MapView(),
+        '/chat-list':(BuildContext context) => ChatListView(),
       }
   ));
 }
