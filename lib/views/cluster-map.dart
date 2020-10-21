@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:collection';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -7,10 +6,9 @@ import 'package:google_maps_cluster_manager/google_maps_cluster_manager.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:logger/logger.dart';
 
-import '../service/marker-service.dart';
-import '../model/map-marker.dart';
 import '../model/map-point.dart';
 import '../page.dart';
+import '../service/marker-service.dart';
 
 class ClusterMap extends GoogleMapExampleAppPage {
   ClusterMap() : super(const Icon(Icons.map), 'Cluster');
@@ -26,7 +24,7 @@ class MapSample extends StatefulWidget {
   State<MapSample> createState() => MapSampleState();
 }
 
-class MapSampleState extends State<MapSample> {
+class MapSampleState extends State<MapSample> with WidgetsBindingObserver {
   var logger = Logger();
   ClusterManager _clusterManager;
 
@@ -38,39 +36,45 @@ class MapSampleState extends State<MapSample> {
 
   final CameraPosition _parisCameraPosition = CameraPosition(target: LatLng(52.479099, 13.373282), zoom: 9.0);
 
-  // List<ClusterItem<Place>> items = [
-  //   for (int i = 0; i < 10; i++)
-  //     ClusterItem(LatLng(48.848200 + i * 0.001, 2.319124 + i * 0.001)),
-  //   for (int i = 0; i < 10; i++)
-  //     ClusterItem(LatLng(48.858265 - i * 0.001, 2.350107 + i * 0.001),
-  //         item: Place(name: 'Restaurant $i', isClosed: i % 2 == 0)),
-  //   for (int i = 0; i < 10; i++)
-  //     ClusterItem(LatLng(48.858265 + i * 0.01, 2.350107 - i * 0.01), item: Place(name: 'Bar $i')),
-  //   for (int i = 0; i < 10; i++)
-  //     ClusterItem(LatLng(48.858265 - i * 0.1, 2.350107 - i * 0.01), item: Place(name: 'Hotel $i')),
-  //   for (int i = 0; i < 10; i++) ClusterItem(LatLng(48.858265 + i * 0.1, 2.350107 + i * 0.1)),
-  //   for (int i = 0; i < 10; i++) ClusterItem(LatLng(48.858265 + i * 1, 2.350107 + i * 1)),
-  // ];
-
-  // List<ClusterItem<Place>> items = [
-  //   ClusterItem(LatLng(52.479099, 13.373282)),
-  // ];
+  AppLifecycleState _notification;
 
   void updateMarkers() async {
     while (true) {
       await new Future.delayed(const Duration(milliseconds: 3000));
-      // logger.i('обновили точки');
-      // _manager.updateMarkers(_markerService.getMarkers());
-      _clusterManager.setItems(_markerService.getItems());
-      // _manager.updateMarkers()
+      // if (ModalRoute.of(context).isCurrent) {
+      if (isActive()) {
+        await _markerService.doUpdate();
+        _clusterManager.setItems(_markerService.getItems());
+      }
     }
   }
 
+  bool isActive(){
+    return (_notification == null || _notification.index == 0) && ModalRoute.of(context).isCurrent;
+  }
+
+
+
   @override
   void initState() {
+    print("initState");
     _clusterManager = _initClusterManager();
     updateMarkers();
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    setState(() {
+      _notification = state;
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   ClusterManager _initClusterManager() {
@@ -113,27 +117,6 @@ class MapSampleState extends State<MapSample> {
         ),
       ),
     ]));
-
-    // return new Scaffold(
-    //   body: GoogleMap(
-    //       mapToolbarEnabled: false,
-    //       mapType: MapType.normal,
-    //       initialCameraPosition: _parisCameraPosition,
-    //       markers: markers,
-    //       onMapCreated: (GoogleMapController controller) {
-    //         _controller.complete(controller);
-    //         _clusterManager.setMapController(controller);
-    //       },
-    //       onCameraMove: _clusterManager.onCameraMove,
-    //       onCameraIdle: _clusterManager.updateMap),
-    //   floatingActionButton: FloatingActionButton(
-    //     onPressed: () {
-    //       print("FloatingActionButton is pressed  v!!");
-    //     },
-    //     child: Icon(Icons.update),
-    //   ),
-    //   floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
-    // );
   }
 
   Future<Marker> Function(Cluster<MapPoint>) get _markerBuilder => (cluster) async {

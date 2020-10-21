@@ -29,6 +29,7 @@ dependencies:
   google_maps_cluster_manager: ^0.2.0
   logger: ^0.9.4
   ansicolor: ^1.0.5
+  intl: ^0.16.1
 
 
 
