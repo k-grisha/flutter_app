@@ -33,7 +33,7 @@ class ChatItemService {
     return _items.length;
   }
 
-  String getFormatted(DateTime dateTime) {
+  String getFormattedDateTime(DateTime dateTime) {
     var now = DateTime.now();
     if (now.difference(dateTime).inDays < 1 || now.day == dateTime.day) {
       return DateFormat.Hm().format(dateTime);

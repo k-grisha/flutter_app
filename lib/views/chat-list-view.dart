@@ -39,7 +39,7 @@ class ChatListView extends StatelessWidget {
                         ],
                       ),
                       Expanded(
-                          child: Text(chatItemService.getFormatted(chatItem.lastMessageTime),
+                          child: Text(chatItemService.getFormattedDateTime(chatItem.lastMessageTime),
                               style: DefaultTextStyle.of(context).style.apply(fontSizeFactor: 0.8),
                               textAlign: TextAlign.right))
                     ],
