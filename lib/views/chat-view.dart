@@ -1,17 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/service/chat-message-service.dart';
-
-// class ChatView extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//         appBar: AppBar(
-//           title: Text('Чат c Vasia'),
-//           backgroundColor: Colors.orange,
-//         ),
-//         body: ChatWidget());
-//   }
-// }
+import 'package:flutter_app/service/datatime-util.dart';
 
 class ChatView extends StatefulWidget {
   @override
@@ -19,7 +8,10 @@ class ChatView extends StatefulWidget {
 }
 
 class ChatWidgetState extends State<ChatView> {
-  ChatMessageService _chatMessageService = ChatMessageService();
+  final String _myUuid = "a";
+  final String _opponentUuid = "a";
+
+  final ChatMessageService _chatMessageService = ChatMessageService();
   final TextEditingController eCtrl = new TextEditingController();
 
   @override
@@ -44,13 +36,24 @@ class ChatWidgetState extends State<ChatView> {
         reverse: true,
         itemCount: _chatMessageService.getMessageCount(),
         itemBuilder: (context, index) {
-          var msg = _chatMessageService.getMessagesFrom("b", index);
+          var msg = _chatMessageService.getMessagesFrom(_opponentUuid, index);
           return Column(
+            crossAxisAlignment: msg.fromUuid == _myUuid ? CrossAxisAlignment.end : CrossAxisAlignment.start,
             children: <Widget>[
-              ListTile(
-                title: Text(msg.message),
+              Text(msg.message, style: DefaultTextStyle.of(context).style.apply(fontSizeFactor: 1)),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(DateTimeUtil.getFormattedTime(msg.received),
+                      style: DefaultTextStyle.of(context).style.apply(fontSizeFactor: 0.8)),
+                  Icon(
+                    Icons.done_all,
+                    size: 17.0,
+                    color: Colors.orange,
+                  )
+                ],
               ),
-              Divider(), //                           <-- Divider
+              Divider(),
             ],
           );
         },

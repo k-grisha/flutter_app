@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/service/chat-item-service.dart';
+import 'package:flutter_app/service/datatime-util.dart';
 
 class ChatListView extends StatelessWidget {
   final ChatItemService chatItemService = new ChatItemService();
@@ -39,7 +40,7 @@ class ChatListView extends StatelessWidget {
                         ],
                       ),
                       Expanded(
-                          child: Text(chatItemService.getFormattedDateTime(chatItem.lastMessageTime),
+                          child: Text(DateTimeUtil.getFormattedDateTime(chatItem.lastMessageTime),
                               style: DefaultTextStyle.of(context).style.apply(fontSizeFactor: 0.8),
                               textAlign: TextAlign.right))
                     ],

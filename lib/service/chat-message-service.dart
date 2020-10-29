@@ -19,16 +19,18 @@ class ChatMessageService {
   }
 
   ChatMessage getMessagesFrom(String from, int i) {
-      return _messages[i];
+    if (i + 1 >= _messages.length) {
+      print("Try to fetch more message");
+    }
+    return _messages[i];
   }
 
-  int getMessageCount(){
+  int getMessageCount() {
     return _messages.length;
   }
 
-  addMessage(String message){
+  addMessage(String message) {
     _messages.add(ChatMessage("a", "b", message));
     _messages.sort((a, b) => b.received.compareTo(a.received));
   }
-
 }
