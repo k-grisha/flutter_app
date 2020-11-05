@@ -2,10 +2,13 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_app/service/common.dart';
+import 'package:flutter_app/service/position-service.dart';
 import 'package:google_maps_cluster_manager/google_maps_cluster_manager.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:logger/logger.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
 import '../model/map-point.dart';
 import '../page.dart';
 import '../service/marker-service.dart';
@@ -38,7 +41,7 @@ class MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
 
   AppLifecycleState _notification;
 
-  void updateMarkers() async {
+  void _startUpdateMarkers() async {
     while (true) {
       await new Future.delayed(const Duration(milliseconds: 3000));
       if (isActive()) {
@@ -56,9 +59,24 @@ class MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
   void initState() {
     print("initState");
     _clusterManager = _initClusterManager();
-    updateMarkers();
+    _checkIfRegistered();
+    _startUpdatePosition();
+    _startUpdateMarkers();
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+  }
+
+  void _startUpdatePosition() {
+    PositionService positionService = new PositionService();
+    positionService.start();
+  }
+
+  void _checkIfRegistered() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String myUuid = prefs.getString(Common.CONFIG_MY_UUID);
+    if (myUuid == null) {
+      Navigator.pushNamed(context, '/registration');
+    }
   }
 
   @override

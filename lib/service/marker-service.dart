@@ -4,9 +4,11 @@ import 'package:google_maps_cluster_manager/google_maps_cluster_manager.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../dto/point-dto.dart';
 import '../model/map-point.dart';
+import 'common.dart';
 
 class MarkerService {
   final List<ClusterItem<MapPoint>> _items = [];
@@ -24,8 +26,12 @@ class MarkerService {
   }
 
   Future<void> doUpdate() async {
+    var myUuid = await getMyUuid();
+    if (myUuid == null) {
+      return;
+    }
     try {
-      var response = await http.get("http://192.168.31.154:8010/api/v1/point");
+      var response = await http.get("http://192.168.31.152:8010/api/v1/point");
       if (response.statusCode == 200) {
         var parsed = json.decode(response.body).cast<Map<String, dynamic>>();
         List<PointDto> dtos = parsed.map<PointDto>((json) => PointDto.fromMap(json)).toList();
@@ -45,6 +51,11 @@ class MarkerService {
     } catch (e) {
       logger.w("Point Service is unreachable ", e);
     }
+  }
+
+  Future<String> getMyUuid() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(Common.CONFIG_MY_UUID);
   }
 
   // Set<Marker> getMarkers() {
