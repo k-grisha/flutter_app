@@ -1,11 +1,10 @@
-import 'dart:convert';
-
+import 'package:dio/dio.dart';
 import 'package:google_maps_cluster_manager/google_maps_cluster_manager.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../client/map-client.dart';
 import '../dto/point-dto.dart';
 import '../model/map-point.dart';
 import 'common.dart';
@@ -16,6 +15,7 @@ class MarkerService {
   // final Set<Marker> _markers = new HashSet<Marker>();
   // final Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   var logger = Logger();
+  final MapClient mapClient = MapClient(Dio());
 
   MarkerService() {
     // _markers.add(Marker(markerId: MarkerId("berlin 1"), position: LatLng(52.534692, 13.395905)));
@@ -31,23 +31,17 @@ class MarkerService {
       return;
     }
     try {
-      var response = await http.get("http://192.168.31.152:8010/api/v1/point");
-      if (response.statusCode == 200) {
-        var parsed = json.decode(response.body).cast<Map<String, dynamic>>();
-        List<PointDto> dtos = parsed.map<PointDto>((json) => PointDto.fromMap(json)).toList();
-        var newItems = dtos
-            .map((dto) => ClusterItem(LatLng(dto.lat / 1000000, dto.lon / 1000000), item: MapPoint(dto.id, dto.name)))
-            .toList();
-        //fixme
-        _items.clear();
-        _items.addAll(newItems);
-        // Set<Marker> markers = dtos
-        //     .map((dto) => Marker(markerId: MarkerId(dto.id), position: LatLng(dto.lat / 1000000, dto.lon / 1000000)))
-        //     .toSet();
-        // _markers.addAll(markers);
-      } else {
-        logger.w('Unable to fetch points from the Point Service. code: ${response.statusCode}');
-      }
+      List<PointDto> dtos = await mapClient.getPoints();
+      var newItems = dtos
+          .map((dto) => ClusterItem(LatLng(dto.lat / 1000000, dto.lon / 1000000), item: MapPoint(dto.uuid, dto.name)))
+          .toList();
+      //fixme
+      _items.clear();
+      _items.addAll(newItems);
+      // Set<Marker> markers = dtos
+      //     .map((dto) => Marker(markerId: MarkerId(dto.id), position: LatLng(dto.lat / 1000000, dto.lon / 1000000)))
+      //     .toSet();
+      // _markers.addAll(markers);
     } catch (e) {
       logger.w("Point Service is unreachable ", e);
     }
