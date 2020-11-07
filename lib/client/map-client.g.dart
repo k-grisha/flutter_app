@@ -21,7 +21,7 @@ class _MapClient implements MapClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    final _result = await _dio.request<List<dynamic>>('/point2',
+    final _result = await _dio.request<List<dynamic>>('/point',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'GET',

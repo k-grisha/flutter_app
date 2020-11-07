@@ -8,7 +8,7 @@ part 'map-client.g.dart';
 abstract class MapClient {
   factory MapClient(Dio dio, {String baseUrl}) = _MapClient;
 
-  @GET("/point2")
+  @GET("/point")
   Future<List<PointDto>> getPoints();
 }
 
