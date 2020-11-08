@@ -11,7 +11,7 @@ class PositionService {
       if (myUuid != null) {
         print("Send position");
       } else {
-        print("Not registered");
+        print("position not send, cause not registered");
       }
 
       // else if (ModalRoute.of(context).settings.name != "/registration'") {

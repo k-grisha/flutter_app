@@ -7,8 +7,8 @@ import 'package:flutter_app/service/position-service.dart';
 import 'package:google_maps_cluster_manager/google_maps_cluster_manager.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:logger/logger.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../model/map-point.dart';
 import '../page.dart';
 import '../service/marker-service.dart';
@@ -57,13 +57,12 @@ class MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    print("initState");
     _clusterManager = _initClusterManager();
     _checkIfRegistered();
     _startUpdatePosition();
     _startUpdateMarkers();
-    super.initState();
     WidgetsBinding.instance.addObserver(this);
+    super.initState();
   }
 
   void _startUpdatePosition() {
@@ -80,7 +79,9 @@ class MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
   }
 
   @override
+  // fixme: it doesn't work
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
     setState(() {
       _notification = state;
     });

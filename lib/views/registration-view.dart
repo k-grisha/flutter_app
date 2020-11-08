@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/service/common.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+
+//todo delete this class
 class RegistrationView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    print("  ---  RegistrationView --- " + ModalRoute.of(context).settings.name);
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
@@ -16,14 +17,14 @@ class RegistrationView extends StatelessWidget {
           backgroundColor: Colors.orange,
         ),
         body: TextField(
-          keyboardType: TextInputType.multiline,
-          maxLines: null,
-          textInputAction: TextInputAction.newline,
+          // keyboardType: TextInputType.multiline,
+          // maxLines: null,
+          // textInputAction: TextInputAction.newline,
           // controller: eCtrl,
           decoration: InputDecoration(
-            hintText: 'Enter a message',
+            hintText: 'Enter a login',
             suffixIcon: IconButton(
-              icon: Icon(Icons.send),
+              icon: Icon(Icons.done),
               onPressed: () {
                 _onLoading(context);
                 // var response = await http.get("http://192.168.31.152:8010/api/v1/point");
@@ -46,14 +47,8 @@ class RegistrationView extends StatelessWidget {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return Dialog(
-          child: new Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              new CircularProgressIndicator(),
-              new Text("Loading"),
-            ],
-          ),
+        return Center(
+          child: CircularProgressIndicator(),
         );
       },
     );
@@ -62,7 +57,7 @@ class RegistrationView extends StatelessWidget {
     await prefs.setString(Common.CONFIG_MY_UUID, "112233");
     await new Future.delayed(const Duration(milliseconds: 3000));
     Navigator.pop(context); //pop dialog
-    Navigator.pop(context); //pop dialog
+    Navigator.pop(context);
     // new Future.delayed(new Duration(seconds: 10), () {
     //   Navigator.pop(context); //pop dialog
     //   // _login();

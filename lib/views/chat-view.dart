@@ -80,4 +80,12 @@ class ChatWidgetState extends State<ChatView> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    eCtrl.dispose();
+    super.dispose();
+  }
+
 }
