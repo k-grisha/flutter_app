@@ -12,7 +12,7 @@ class ChatWidgetState extends State<ChatView> {
   final String _opponentUuid = "a";
 
   final ChatMessageService _chatMessageService = ChatMessageService();
-  final TextEditingController eCtrl = new TextEditingController();
+  final TextEditingController _eCtrl = new TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -66,14 +66,14 @@ class ChatWidgetState extends State<ChatView> {
       keyboardType: TextInputType.multiline,
       maxLines: null,
       textInputAction: TextInputAction.newline,
-      controller: eCtrl,
+      controller: _eCtrl,
       decoration: InputDecoration(
         hintText: 'Enter a message',
         suffixIcon: IconButton(
           icon: Icon(Icons.send),
           onPressed: () {
-            _chatMessageService.addMessage(eCtrl.text);
-            eCtrl.clear();
+            _chatMessageService.addMessage(_eCtrl.text);
+            _eCtrl.clear();
             setState(() {});
           },
         ),
@@ -84,7 +84,7 @@ class ChatWidgetState extends State<ChatView> {
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
-    eCtrl.dispose();
+    _eCtrl.dispose();
     super.dispose();
   }
 

@@ -1,6 +1,11 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/service/common.dart';
+import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../client/chat-clietn.dart';
+import '../dto/user-dto.dart';
 
 class SettingsView extends StatefulWidget {
   @override
@@ -8,10 +13,13 @@ class SettingsView extends StatefulWidget {
 }
 
 class SettingsViewState extends State with WidgetsBindingObserver {
+  var logger = Logger();
+
   // static final RegExp nameRegExp = RegExp(r'[!@#<>?":_`~;[\]\\|=+)(*&^%0-9-]');
   static final RegExp nameRegExp = RegExp(r'^[a-zA-Z](([\._\-][a-zA-Z0-9])|[a-zA-Z0-9])*[a-z0-9]$');
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _eCtrl = new TextEditingController();
+  final ChatClient mapClient = ChatClient(Dio());
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,15 +40,16 @@ class SettingsViewState extends State with WidgetsBindingObserver {
                     'Имя пользователя:',
                     style: TextStyle(fontSize: 10.0),
                   ),
-                  new TextFormField(validator: (value) {
-                    return _isNameValid(value);
-                  }),
+                  new TextFormField(
+                      controller: _eCtrl,
+                      validator: (value) {
+                        return _isNameValid(value);
+                      }),
                   new SizedBox(height: 10.0),
                   new RaisedButton(
                     onPressed: () {
                       if (_formKey.currentState.validate()) {
                         _registerNewUser(context);
-                        // Scaffold.of(context).showSnackBar(SnackBar(content: Text('Processing Data')));
                       }
                     },
                     child: Text('Проверить'),
@@ -60,10 +69,17 @@ class SettingsViewState extends State with WidgetsBindingObserver {
         );
       },
     );
-    SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    // await prefs.setString(Common.CONFIG_MY_UUID, "112233");
-    await new Future.delayed(const Duration(milliseconds: 3000));
+    var createdUser = await mapClient.createUser(new UserDto(_eCtrl.text));
+    
+    if (createdUser.errorCode != 0) {
+      logger.w(createdUser.message);
+      return;
+    }
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(Common.CONFIG_MY_UUID, createdUser.body.uuid);
+    // await new Future.delayed(const Duration(milliseconds: 3000));
     Navigator.pop(context); //pop dialog
     Navigator.pop(context);
   }
@@ -111,7 +127,4 @@ class SettingsViewState extends State with WidgetsBindingObserver {
       Navigator.of(context).pop();
     }
   }
-
-
-
 }

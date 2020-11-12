@@ -15,7 +15,7 @@ class MarkerService {
   // final Set<Marker> _markers = new HashSet<Marker>();
   // final Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   var logger = Logger();
-  final MapClient mapClient = MapClient(Dio());
+  final MapClient _mapClient = MapClient(Dio());
 
   MarkerService() {
     // _markers.add(Marker(markerId: MarkerId("berlin 1"), position: LatLng(52.534692, 13.395905)));
@@ -31,7 +31,7 @@ class MarkerService {
       return;
     }
     try {
-      List<PointDto> dtos = await mapClient.getPoints();
+      List<PointDto> dtos = await _mapClient.getPoints();
       var newItems = dtos
           .map((dto) => ClusterItem(LatLng(dto.lat / 1000000, dto.lon / 1000000), item: MapPoint(dto.uuid, dto.name)))
           .toList();

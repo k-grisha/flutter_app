@@ -8,8 +8,8 @@ part of 'user-dto.dart';
 
 UserDto _$UserDtoFromJson(Map<String, dynamic> json) {
   return UserDto(
-    json['uuid'] as String,
     json['name'] as String,
+    uuid: json['uuid'] as String,
   );
 }
 

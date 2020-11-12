@@ -17,11 +17,14 @@ class _ChatClient implements ChatClient {
   String baseUrl;
 
   @override
-  Future<void> createUser() async {
+  Future<UserDtoResponse> createUser(userDto) async {
+    ArgumentError.checkNotNull(userDto, 'userDto');
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    await _dio.request<void>('/user',
+    _data.addAll(userDto?.toJson() ?? <String, dynamic>{});
+    _data.removeWhere((k, v) => v == null);
+    final _result = await _dio.request<Map<String, dynamic>>('/user',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'POST',
@@ -29,6 +32,7 @@ class _ChatClient implements ChatClient {
             extra: _extra,
             baseUrl: baseUrl),
         data: _data);
-    return null;
+    final value = UserDtoResponse.fromJson(_result.data);
+    return value;
   }
 }

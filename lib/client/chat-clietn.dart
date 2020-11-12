@@ -1,13 +1,15 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 
+import '../dto/user-dto-response.dart';
+import '../dto/user-dto.dart';
+
 part 'chat-clietn.g.dart';
 
 @RestApi(baseUrl: "http://192.168.31.154:8020/api/v1")
-abstract class ChatClient{
+abstract class ChatClient {
   factory ChatClient(Dio dio, {String baseUrl}) = _ChatClient;
 
   @POST("/user")
-  Future<void> createUser();
-
+  Future<UserDtoResponse> createUser(@Body() UserDto userDto);
 }
