@@ -52,7 +52,7 @@ class SettingsViewState extends State with WidgetsBindingObserver {
                         _registerNewUser(context);
                       }
                     },
-                    child: Text('Проверить'),
+                    child: Text('Регистрация'),
                     color: Colors.blue,
                     textColor: Colors.white,
                   )

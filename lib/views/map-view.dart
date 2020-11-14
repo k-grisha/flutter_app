@@ -8,6 +8,7 @@ import 'package:google_maps_cluster_manager/google_maps_cluster_manager.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqlite_viewer/sqlite_viewer.dart';
 
 import '../model/map-point.dart';
 import '../page.dart';
@@ -125,10 +126,24 @@ class MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
         child: Align(
           alignment: Alignment.bottomLeft,
           child: FloatingActionButton(
+            heroTag: null,
             onPressed: () => Navigator.pushNamed(context, '/chat-list'),
             materialTapTargetSize: MaterialTapTargetSize.padded,
             backgroundColor: Colors.orange,
             child: const Icon(Icons.forum, size: 36.0),
+          ),
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.all(40.0),
+        child: Align(
+          alignment: Alignment.bottomRight,
+          child: FloatingActionButton(
+            heroTag: null,
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => DatabaseList())),
+            materialTapTargetSize: MaterialTapTargetSize.padded,
+            backgroundColor: Colors.orange,
+            child: const Icon(Icons.gradient_sharp, size: 36.0),
           ),
         ),
       ),

@@ -9,6 +9,7 @@ class PositionService {
     while (true) {
       String myUuid = prefs.getString(Common.CONFIG_MY_UUID);
       if (myUuid != null) {
+        // todo allocate a position and send to the server
         print("Send position");
       } else {
         print("position not send, cause not registered");

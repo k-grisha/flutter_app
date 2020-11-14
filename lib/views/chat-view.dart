@@ -24,6 +24,7 @@ class ChatWidgetState extends State<ChatView> {
         ),
         body: Container(
           color: Colors.white,
+          padding: EdgeInsets.all(10.0),
           child: Column(
             children: [getChatMessages(), getSendMessageFormWidget()],
           ),
@@ -38,7 +39,7 @@ class ChatWidgetState extends State<ChatView> {
         itemBuilder: (context, index) {
           var msg = _chatMessageService.getMessagesFrom(_opponentUuid, index);
           return Column(
-            crossAxisAlignment: msg.fromUuid == _myUuid ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            crossAxisAlignment: msg.sender == _myUuid ? CrossAxisAlignment.end : CrossAxisAlignment.start,
             children: <Widget>[
               Text(msg.message, style: DefaultTextStyle.of(context).style.apply(fontSizeFactor: 1)),
               Row(

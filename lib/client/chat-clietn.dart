@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_app/dto/message-dto-response.dart';
 import 'package:retrofit/retrofit.dart';
 
 import '../dto/user-dto-response.dart';
@@ -12,4 +13,9 @@ abstract class ChatClient {
 
   @POST("/user")
   Future<UserDtoResponse> createUser(@Body() UserDto userDto);
+
+  @GET("/message/{uuid}")
+  Future<MessageDtoResponse> getMessage(@Path("uuid") String uuid);
+
+
 }
