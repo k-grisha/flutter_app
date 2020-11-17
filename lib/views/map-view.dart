@@ -11,19 +11,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqlite_viewer/sqlite_viewer.dart';
 
 import '../model/map-point.dart';
-import '../page.dart';
 import '../service/marker-service.dart';
 
-class MapView extends GoogleMapExampleAppPage {
-  MapView() : super(const Icon(Icons.map), 'Cluster');
-
-  @override
-  Widget build(BuildContext context) {
-    return MapWidget();
-  }
-}
-
 class MapWidget extends StatefulWidget {
+  final MarkerService _markerService;
+  final CameraPosition _initCameraPosition = CameraPosition(target: LatLng(52.479099, 13.373282), zoom: 9.0);
+
+  MapWidget(this._markerService);
+
   @override
   State<MapWidget> createState() => MapWidgetState();
 }
@@ -36,18 +31,14 @@ class MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
 
   Set<Marker> markers = Set();
 
-  MarkerService _markerService = new MarkerService();
-
-  final CameraPosition _parisCameraPosition = CameraPosition(target: LatLng(52.479099, 13.373282), zoom: 9.0);
-
   AppLifecycleState _notification;
 
   void _startUpdateMarkers() async {
     while (true) {
       await new Future.delayed(const Duration(milliseconds: 3000));
       if (isActive()) {
-        await _markerService.doUpdate();
-        _clusterManager.setItems(_markerService.getItems());
+        await widget._markerService.doUpdate();
+        _clusterManager.setItems(widget._markerService.getItems());
       }
     }
   }
@@ -96,7 +87,7 @@ class MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
 
   ClusterManager _initClusterManager() {
     return ClusterManager<MapPoint>([], _updateMarkers,
-        markerBuilder: _markerBuilder, initialZoom: _parisCameraPosition.zoom, stopClusteringZoom: 17.0);
+        markerBuilder: _markerBuilder, initialZoom: widget._initCameraPosition.zoom, stopClusteringZoom: 17.0);
   }
 
   void _updateMarkers(Set<Marker> markers) {
@@ -113,7 +104,7 @@ class MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
       GoogleMap(
           mapToolbarEnabled: false,
           mapType: MapType.normal,
-          initialCameraPosition: _parisCameraPosition,
+          initialCameraPosition: widget._initCameraPosition,
           markers: markers,
           onMapCreated: (GoogleMapController controller) {
             _controller.complete(controller);

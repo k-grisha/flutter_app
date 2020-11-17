@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:google_maps_cluster_manager/google_maps_cluster_manager.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:logger/logger.dart';
@@ -15,15 +14,9 @@ class MarkerService {
   // final Set<Marker> _markers = new HashSet<Marker>();
   // final Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   var logger = Logger();
-  final MapClient _mapClient = MapClient(Dio());
+  final MapClient _mapClient;
 
-  MarkerService() {
-    // _markers.add(Marker(markerId: MarkerId("berlin 1"), position: LatLng(52.534692, 13.395905)));
-    // _markers.add(Marker(markerId: MarkerId("berlin 2"), position: LatLng(52.499308, 13.422632)));
-    // _markers.add(Marker(markerId: MarkerId("berlin 3"), position: LatLng(52.513327, 13.377792)));
-    // _items
-    // doUpdate();
-  }
+  MarkerService(this._mapClient);
 
   Future<void> doUpdate() async {
     var myUuid = await getMyUuid();

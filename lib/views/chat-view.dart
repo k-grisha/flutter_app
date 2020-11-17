@@ -3,6 +3,10 @@ import 'package:flutter_app/service/chat-message-service.dart';
 import 'package:flutter_app/service/datatime-util.dart';
 
 class ChatView extends StatefulWidget {
+  final ChatMessageService _chatMessageService;
+
+  const ChatView(this._chatMessageService);
+
   @override
   State<ChatView> createState() => ChatWidgetState();
 }
@@ -11,7 +15,6 @@ class ChatWidgetState extends State<ChatView> {
   final String _myUuid = "a";
   final String _opponentUuid = "a";
 
-  final ChatMessageService _chatMessageService = ChatMessageService();
   final TextEditingController _eCtrl = new TextEditingController();
 
   @override
@@ -35,9 +38,9 @@ class ChatWidgetState extends State<ChatView> {
     return Flexible(
       child: ListView.builder(
         reverse: true,
-        itemCount: _chatMessageService.getMessageCount(),
+        itemCount: widget._chatMessageService.getMessageCount(),
         itemBuilder: (context, index) {
-          var msg = _chatMessageService.getMessagesFrom(_opponentUuid, index);
+          var msg = widget._chatMessageService.getMessagesFrom(_opponentUuid, index);
           return Column(
             crossAxisAlignment: msg.sender == _myUuid ? CrossAxisAlignment.end : CrossAxisAlignment.start,
             children: <Widget>[
@@ -73,7 +76,7 @@ class ChatWidgetState extends State<ChatView> {
         suffixIcon: IconButton(
           icon: Icon(Icons.send),
           onPressed: () {
-            _chatMessageService.addMessage(_eCtrl.text);
+            widget._chatMessageService.addMessage(_eCtrl.text);
             _eCtrl.clear();
             setState(() {});
           },
@@ -88,5 +91,4 @@ class ChatWidgetState extends State<ChatView> {
     _eCtrl.dispose();
     super.dispose();
   }
-
 }

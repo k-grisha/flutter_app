@@ -10,10 +10,10 @@ class ChatMessageService {
     ChatMessage(5, "a", "b", "I fine1"),
     ChatMessage(6, "b", "a", "I fine669"),
   ];
-  MessageRepository _messageRepository;
+  final MessageRepository _messageRepository;
 
-  ChatMessageService() {
-    _messageRepository = new MessageRepository();
+  ChatMessageService(this._messageRepository) {
+
     // _messageRepository.save(ChatMessage(999, "a", "b", "msg"));
     _messages.sort((a, b) => b.received.compareTo(a.received));
   }

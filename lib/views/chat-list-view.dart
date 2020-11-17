@@ -3,7 +3,9 @@ import 'package:flutter_app/service/chat-item-service.dart';
 import 'package:flutter_app/service/datatime-util.dart';
 
 class ChatListView extends StatelessWidget {
-  final ChatItemService chatItemService = new ChatItemService();
+  final ChatItemService chatItemService;
+
+  const ChatListView(this.chatItemService);
 
   @override
   Widget build(BuildContext context) {

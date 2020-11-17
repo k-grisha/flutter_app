@@ -1,6 +1,6 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/service/common.dart';
+import 'package:flutter_simple_dependency_injection/injector.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -8,18 +8,21 @@ import '../client/chat-clietn.dart';
 import '../dto/user-dto.dart';
 
 class SettingsView extends StatefulWidget {
+  final ChatClient mapClient;
+
+  SettingsView(this.mapClient);
+
   @override
   State<StatefulWidget> createState() => SettingsViewState();
 }
 
-class SettingsViewState extends State with WidgetsBindingObserver {
+class SettingsViewState extends State<SettingsView> with WidgetsBindingObserver {
   var logger = Logger();
 
   // static final RegExp nameRegExp = RegExp(r'[!@#<>?":_`~;[\]\\|=+)(*&^%0-9-]');
   static final RegExp nameRegExp = RegExp(r'^[a-zA-Z](([\._\-][a-zA-Z0-9])|[a-zA-Z0-9])*[a-z0-9]$');
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _eCtrl = new TextEditingController();
-  final ChatClient mapClient = ChatClient(Dio());
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,8 +73,8 @@ class SettingsViewState extends State with WidgetsBindingObserver {
       },
     );
 
-    var createdUser = await mapClient.createUser(new UserDto(_eCtrl.text));
-    
+    var createdUser = await widget.mapClient.createUser(new UserDto(_eCtrl.text));
+
     if (createdUser.errorCode != 0) {
       logger.w(createdUser.message);
       return;

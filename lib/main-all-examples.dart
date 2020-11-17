@@ -1,26 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/views/map-view.dart';
-import 'views/chat-list-view.dart';
+
+import 'animate_camera.dart';
+import 'lite_mode.dart';
+import 'map_click.dart';
 import 'map_coordinates.dart';
 import 'map_ui.dart';
 import 'marker_icons.dart';
-import 'page.dart';
-
-import 'package:flutter/material.dart';
-import 'lite_mode.dart';
-import 'animate_camera.dart';
-import 'map_click.dart';
 import 'move_camera.dart';
 import 'padding.dart';
+import 'page.dart';
 import 'place_circle.dart';
 import 'place_marker.dart';
 import 'place_polygon.dart';
 import 'place_polyline.dart';
 import 'scrolling_map.dart';
 import 'snapshot.dart';
+import 'views/chat-list-view.dart';
 
 final List<GoogleMapExampleAppPage> _allPages = <GoogleMapExampleAppPage>[
-  MapView(),
+  // MapView(),
   MapUiPage(),
   MapCoordinatesPage(),
   MapClickPage(),
@@ -41,9 +39,9 @@ class MapsDemo extends StatelessWidget {
   void _pushPage(BuildContext context, GoogleMapExampleAppPage page) {
     Navigator.of(context).push(MaterialPageRoute<void>(
         builder: (_) => Scaffold(
-          appBar: AppBar(title: Text(page.title)),
-          body: page,
-        )));
+              appBar: AppBar(title: Text(page.title)),
+              body: page,
+            )));
   }
 
   @override
@@ -63,12 +61,9 @@ class MapsDemo extends StatelessWidget {
 }
 
 void main() {
-  runApp(MaterialApp(
-      initialRoute: '/',
-      routes: {
-        '/':(BuildContext context) => MapsDemo(),
-        '/map':(BuildContext context) => MapView(),
-        '/chat-list':(BuildContext context) => ChatListView(),
-      }
-  ));
+  runApp(MaterialApp(initialRoute: '/', routes: {
+    '/': (BuildContext context) => MapsDemo(),
+    // '/map':(BuildContext context) => MapView(),
+    // '/chat-list': (BuildContext context) => ChatListView(),
+  }));
 }
