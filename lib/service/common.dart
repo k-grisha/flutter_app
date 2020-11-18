@@ -1,5 +1,4 @@
 class Common {
-  static const String CONFIG_MY_UUID = "my_config";
 
   static const String POINT_SERVICE = "http://192.168.31.154:8010";
   static const String POINT_URL = POINT_SERVICE + "/api/v1/point1";

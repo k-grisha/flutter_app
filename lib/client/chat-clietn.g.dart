@@ -37,10 +37,11 @@ class _ChatClient implements ChatClient {
   }
 
   @override
-  Future<MessageDtoResponse> getMessage(uuid) async {
+  Future<MessageDtoResponse> getMessage(uuid, lastId) async {
     ArgumentError.checkNotNull(uuid, 'uuid');
+    ArgumentError.checkNotNull(lastId, 'lastId');
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'lastId': lastId};
     final _data = <String, dynamic>{};
     final _result = await _dio.request<Map<String, dynamic>>('/message/$uuid',
         queryParameters: queryParameters,

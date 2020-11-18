@@ -2,12 +2,10 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app/service/common.dart';
-import 'package:flutter_app/service/position-service.dart';
+import 'package:flutter_app/service/preferences-service.dart';
 import 'package:google_maps_cluster_manager/google_maps_cluster_manager.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:logger/logger.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqlite_viewer/sqlite_viewer.dart';
 
 import '../model/map-point.dart';
@@ -15,9 +13,10 @@ import '../service/marker-service.dart';
 
 class MapWidget extends StatefulWidget {
   final MarkerService _markerService;
+  final PreferencesService _preferences;
   final CameraPosition _initCameraPosition = CameraPosition(target: LatLng(52.479099, 13.373282), zoom: 9.0);
 
-  MapWidget(this._markerService);
+  MapWidget(this._markerService, this._preferences);
 
   @override
   State<MapWidget> createState() => MapWidgetState();
@@ -51,20 +50,13 @@ class MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
   void initState() {
     _clusterManager = _initClusterManager();
     _checkIfRegistered();
-    _startUpdatePosition();
     _startUpdateMarkers();
     WidgetsBinding.instance.addObserver(this);
     super.initState();
   }
 
-  void _startUpdatePosition() {
-    PositionService positionService = new PositionService();
-    positionService.start();
-  }
-
   void _checkIfRegistered() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String myUuid = prefs.getString(Common.CONFIG_MY_UUID);
+    String myUuid = await widget._preferences.getUuid();
     if (myUuid == null) {
       Navigator.pushNamed(context, '/registration');
     }

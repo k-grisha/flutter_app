@@ -1,13 +1,15 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'common.dart';
+import 'preferences-service.dart';
 
 class PositionService {
-  start() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+  final PreferencesService _preferences;
 
+  PositionService(this._preferences);
+
+  start() async {
     while (true) {
-      String myUuid = prefs.getString(Common.CONFIG_MY_UUID);
+      String myUuid = await _preferences.getUuid();
       if (myUuid != null) {
         // todo allocate a position and send to the server
         print("Send position");

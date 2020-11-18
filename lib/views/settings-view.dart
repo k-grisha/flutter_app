@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/service/common.dart';
-import 'package:flutter_simple_dependency_injection/injector.dart';
+import 'package:flutter_app/service/preferences-service.dart';
 import 'package:logger/logger.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../client/chat-clietn.dart';
 import '../dto/user-dto.dart';
 
 class SettingsView extends StatefulWidget {
   final ChatClient mapClient;
+  final PreferencesService _preferences;
 
-  SettingsView(this.mapClient);
+  SettingsView(this.mapClient, this._preferences);
 
   @override
   State<StatefulWidget> createState() => SettingsViewState();
@@ -80,9 +79,7 @@ class SettingsViewState extends State<SettingsView> with WidgetsBindingObserver 
       return;
     }
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString(Common.CONFIG_MY_UUID, createdUser.body.uuid);
-    // await new Future.delayed(const Duration(milliseconds: 3000));
+    await widget._preferences.setUuid(createdUser.body.uuid);
     Navigator.pop(context); //pop dialog
     Navigator.pop(context);
   }
@@ -91,8 +88,7 @@ class SettingsViewState extends State<SettingsView> with WidgetsBindingObserver 
   // fixme: it doesn't work
   Future<bool> didPopRoute() async {
     super.didPopRoute();
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String myUuid = prefs.getString(Common.CONFIG_MY_UUID);
+    String myUuid = await widget._preferences.getUuid();
     if (myUuid != null) {
       return true;
     }
@@ -124,8 +120,7 @@ class SettingsViewState extends State<SettingsView> with WidgetsBindingObserver 
   }
 
   void _popIfRegistered(BuildContext context) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String myUuid = prefs.getString(Common.CONFIG_MY_UUID);
+    String myUuid = await widget._preferences.getUuid();
     if (myUuid != null) {
       Navigator.of(context).pop();
     }

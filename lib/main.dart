@@ -12,6 +12,8 @@ import 'repository/message-repository.dart';
 import 'service/chat-item-service.dart';
 import 'service/chat-message-service.dart';
 import 'service/marker-service.dart';
+import 'service/position-service.dart';
+import 'service/preferences-service.dart';
 import 'views/settings-view.dart';
 
 void main() {
@@ -22,11 +24,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var injector = ModuleContainer().initialise(Injector(), Environment.DEV);
+    injector.get<PositionService>().start();
     return MaterialApp(initialRoute: '/', routes: {
-      '/': (BuildContext context) => MapWidget(injector.get<MarkerService>()),
+      '/': (BuildContext context) => MapWidget(injector.get<MarkerService>(), injector.get<PreferencesService>()),
       '/chat-list': (BuildContext context) => ChatListView(injector.get<ChatItemService>()),
       '/chat': (BuildContext context) => ChatView(injector.get<ChatMessageService>()),
-      '/registration': (BuildContext context) => SettingsView(injector.get<ChatClient>()),
+      '/registration': (BuildContext context) =>
+          SettingsView(injector.get<ChatClient>(), injector.get<PreferencesService>()),
     });
   }
 }
@@ -34,23 +38,17 @@ class MyApp extends StatelessWidget {
 class ModuleContainer {
   Injector initialise(Injector injector, Environment env) {
     injector.map<EnvSettings>((i) => env.settings, isSingleton: true);
+    injector.map<PositionService>((i) => PositionService(i.get<PreferencesService>()), isSingleton: true);
+    injector.map<PreferencesService>((i) => PreferencesService(), isSingleton: true);
     injector.map<ChatClient>((i) => ChatClient(Dio()), isSingleton: true);
     injector.map<MapClient>((i) => MapClient(Dio()), isSingleton: true);
-    injector.map<MarkerService>((i) => MarkerService(i.get<MapClient>()), isSingleton: true);
+    injector.map<MarkerService>((i) => MarkerService(i.get<MapClient>(), i.get<PreferencesService>()),
+        isSingleton: true);
     injector.map<ChatItemService>((i) => ChatItemService(), isSingleton: true);
     injector.map<MessageRepository>((i) => MessageRepository(), isSingleton: true);
-    injector.map<ChatMessageService>((i) => ChatMessageService(i.get<MessageRepository>()), isSingleton: true);
-
-    // injector.map<Logger>((i) => Logger(), isSingleton: true);
-    // injector.map<String>((i) => "https://api.com/", key: "apiUrl");
-    // injector.map<SomeService>((i) => SomeService(i.get<Logger>(), i.get<String>(key: "apiUrl")));
-    //
-    // // note that you can configure mapping in a fluent programming style too
-    // injector.map<SomeType>((injector) => SomeType("0"))
-    //   ..map<SomeType>((injector) => SomeType("1"), key: "One")
-    //   ..map<SomeType>((injector) => SomeType("2"), key: "Two");
-    //
-    // injector.mapWithParams<SomeOtherType>((i, p) => SomeOtherType(p["id"]));
+    injector.map<ChatMessageService>(
+        (i) => ChatMessageService(i.get<MessageRepository>(), i.get<ChatClient>(), i.get<PreferencesService>()),
+        isSingleton: true);
 
     return injector;
   }

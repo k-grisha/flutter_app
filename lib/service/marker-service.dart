@@ -7,19 +7,18 @@ import '../client/map-client.dart';
 import '../dto/point-dto.dart';
 import '../model/map-point.dart';
 import 'common.dart';
+import 'preferences-service.dart';
 
 class MarkerService {
   final List<ClusterItem<MapPoint>> _items = [];
-
-  // final Set<Marker> _markers = new HashSet<Marker>();
-  // final Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   var logger = Logger();
   final MapClient _mapClient;
+  final PreferencesService _preferences;
 
-  MarkerService(this._mapClient);
+  MarkerService(this._mapClient, this._preferences);
 
   Future<void> doUpdate() async {
-    var myUuid = await getMyUuid();
+    var myUuid = await _preferences.getUuid();
     if (myUuid == null) {
       return;
     }
@@ -40,10 +39,6 @@ class MarkerService {
     }
   }
 
-  Future<String> getMyUuid() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString(Common.CONFIG_MY_UUID);
-  }
 
   // Set<Marker> getMarkers() {
   //   return new HashSet<Marker>.from(_markers);
