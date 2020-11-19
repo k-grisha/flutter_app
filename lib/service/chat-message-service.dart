@@ -1,6 +1,7 @@
 import 'package:flutter_app/client/chat-clietn.dart';
 import 'package:flutter_app/model/chat-message.dart';
 import 'package:flutter_app/repository/message-repository.dart';
+import 'package:logger/logger.dart';
 
 import 'preferences-service.dart';
 
@@ -16,6 +17,7 @@ class ChatMessageService {
   final MessageRepository _messageRepository;
   final ChatClient _chatClient;
   final PreferencesService _preferences;
+  var logger = Logger();
 
   ChatMessageService(this._messageRepository, this._chatClient, this._preferences) {
     // _messageRepository.save(ChatMessage(999, "a", "b", "msg"));
@@ -38,8 +40,26 @@ class ChatMessageService {
     _messages.sort((a, b) => b.received.compareTo(a.received));
   }
 
-  _getMessages() async {
-    String uuid = await _preferences.getUuid();
-    _chatClient.getMessage(uuid, 1);
+  runMessageUpdater() async {
+
+    while (true) {
+      String uuid = await _preferences.getUuid();
+      if (uuid == null) {
+        await new Future.delayed(const Duration(milliseconds: 3000));
+        continue;
+      }
+      int lastId = await _messageRepository.getMaxMessageId(uuid);
+      var messageDtoResponse = await _chatClient.getMessage(uuid, lastId == null ? 0 : lastId);
+
+      if (messageDtoResponse.errorCode != 0) {
+        logger.w(messageDtoResponse.message);
+        return;
+      }
+
+      var messages =
+          messageDtoResponse.body.map((dto) => ChatMessage(dto.id, dto.sender, dto.recipient, dto.message)).toList();
+      print("RECIEVE MESSAGESSS " + messages.length.toString());
+      _messageRepository.saveAll(messages);
+    }
   }
 }

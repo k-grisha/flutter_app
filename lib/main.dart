@@ -24,6 +24,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var injector = ModuleContainer().initialise(Injector(), Environment.DEV);
+    injector.get<ChatMessageService>().runMessageUpdater();
     return MaterialApp(initialRoute: '/', routes: {
       '/': (BuildContext context) =>
           MapWidget(injector.get<MarkerService>(), injector.get<PreferencesService>(), injector.get<PositionService>()),

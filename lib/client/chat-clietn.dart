@@ -16,6 +16,4 @@ abstract class ChatClient {
 
   @GET("/message/{uuid}")
   Future<MessageDtoResponse> getMessage(@Path("uuid") String uuid, @Query("lastId") int lastId);
-
-
 }

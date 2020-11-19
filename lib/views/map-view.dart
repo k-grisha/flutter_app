@@ -166,7 +166,7 @@ class MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
   InfoWindow getInfoWindow(Cluster<MapPoint> cluster) {
     var point = cluster.items.first;
     return InfoWindow(
-        title: "My Name is " + "point.name",
+        title: "My Name is " + point.uuid,
         snippet: '*',
         onTap: () {
           Navigator.pushNamed(context, '/chat');
