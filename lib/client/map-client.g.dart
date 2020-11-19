@@ -34,4 +34,24 @@ class _MapClient implements MapClient {
         .toList();
     return value;
   }
+
+  @override
+  Future<void> updatePosition(uuid, pointDto) async {
+    ArgumentError.checkNotNull(uuid, 'uuid');
+    ArgumentError.checkNotNull(pointDto, 'pointDto');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(pointDto?.toJson() ?? <String, dynamic>{});
+    _data.removeWhere((k, v) => v == null);
+    await _dio.request<void>('/point/$uuid',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    return null;
+  }
 }

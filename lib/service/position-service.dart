@@ -1,27 +1,27 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_app/dto/point-dto.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:logger/logger.dart';
 
+import '../client/map-client.dart';
 import 'preferences-service.dart';
 
 class PositionService {
   final PreferencesService _preferences;
+  final MapClient _mapClient;
+  var logger = Logger();
 
-  PositionService(this._preferences);
+  PositionService(this._preferences, this._mapClient);
 
-  start() async {
-    while (true) {
-      String myUuid = await _preferences.getUuid();
-      if (myUuid != null) {
-        // todo allocate a position and send to the server
-        print("Send position");
-      } else {
-        print("position not send, cause not registered");
+  updateMyPoint() async {
+    String myUuid = await _preferences.getUuid();
+    if (myUuid != null) {
+      try {
+        Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+        await _mapClient.updatePosition(
+            myUuid, PointDto(null, (position.latitude * 1000000).toInt(), (position.longitude * 1000000).toInt()));
+      } catch (e) {
+        logger.w("Unable to update position ", e);
       }
-
-      // else if (ModalRoute.of(context).settings.name != "/registration'") {
-      //   print (ModalRoute.of(context).settings.name );
-      //   // Navigator.pushNamed(context, '/registration');
-      // }
-      await new Future.delayed(const Duration(milliseconds: 3000));
     }
   }
 }

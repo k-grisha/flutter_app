@@ -1,12 +1,10 @@
 import 'package:google_maps_cluster_manager/google_maps_cluster_manager.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:logger/logger.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../client/map-client.dart';
 import '../dto/point-dto.dart';
 import '../model/map-point.dart';
-import 'common.dart';
 import 'preferences-service.dart';
 
 class MarkerService {
@@ -25,7 +23,7 @@ class MarkerService {
     try {
       List<PointDto> dtos = await _mapClient.getPoints();
       var newItems = dtos
-          .map((dto) => ClusterItem(LatLng(dto.lat / 1000000, dto.lon / 1000000), item: MapPoint(dto.uuid, dto.name)))
+          .map((dto) => ClusterItem(LatLng(dto.lat / 1000000, dto.lon / 1000000), item: MapPoint(dto.uuid)))
           .toList();
       //fixme
       _items.clear();
@@ -38,7 +36,6 @@ class MarkerService {
       logger.w("Point Service is unreachable ", e);
     }
   }
-
 
   // Set<Marker> getMarkers() {
   //   return new HashSet<Marker>.from(_markers);

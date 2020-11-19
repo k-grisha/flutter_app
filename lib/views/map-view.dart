@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_app/service/position-service.dart';
 import 'package:flutter_app/service/preferences-service.dart';
 import 'package:google_maps_cluster_manager/google_maps_cluster_manager.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -14,9 +15,10 @@ import '../service/marker-service.dart';
 class MapWidget extends StatefulWidget {
   final MarkerService _markerService;
   final PreferencesService _preferences;
+  final PositionService _positionService;
   final CameraPosition _initCameraPosition = CameraPosition(target: LatLng(52.479099, 13.373282), zoom: 9.0);
 
-  MapWidget(this._markerService, this._preferences);
+  MapWidget(this._markerService, this._preferences, this._positionService);
 
   @override
   State<MapWidget> createState() => MapWidgetState();
@@ -34,11 +36,20 @@ class MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
 
   void _startUpdateMarkers() async {
     while (true) {
-      await new Future.delayed(const Duration(milliseconds: 3000));
       if (isActive()) {
         await widget._markerService.doUpdate();
         _clusterManager.setItems(widget._markerService.getItems());
       }
+      await new Future.delayed(const Duration(milliseconds: 3000));
+    }
+  }
+
+  void _startUpdateMyPoint() async{
+    while (true) {
+      if (isActive()) {
+       widget._positionService.updateMyPoint();
+      }
+      await new Future.delayed(const Duration(milliseconds: 3000));
     }
   }
 
@@ -48,11 +59,14 @@ class MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    _clusterManager = _initClusterManager();
-    _checkIfRegistered();
-    _startUpdateMarkers();
-    WidgetsBinding.instance.addObserver(this);
     super.initState();
+    _clusterManager = _initClusterManager();
+    Future.delayed(Duration.zero, () {
+      _checkIfRegistered();
+      _startUpdateMarkers();
+      _startUpdateMyPoint();
+    });
+    WidgetsBinding.instance.addObserver(this);
   }
 
   void _checkIfRegistered() async {
@@ -152,7 +166,7 @@ class MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
   InfoWindow getInfoWindow(Cluster<MapPoint> cluster) {
     var point = cluster.items.first;
     return InfoWindow(
-        title: "My Name is " + point.name,
+        title: "My Name is " + "point.name",
         snippet: '*',
         onTap: () {
           Navigator.pushNamed(context, '/chat');

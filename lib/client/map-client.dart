@@ -10,5 +10,8 @@ abstract class MapClient {
 
   @GET("/point")
   Future<List<PointDto>> getPoints();
+
+  @POST("/point/{uuid}")
+  Future<void> updatePosition(@Path("uuid") String uuid, @Body() PointDto pointDto);
 }
 

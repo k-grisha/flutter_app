@@ -24,9 +24,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var injector = ModuleContainer().initialise(Injector(), Environment.DEV);
-    injector.get<PositionService>().start();
     return MaterialApp(initialRoute: '/', routes: {
-      '/': (BuildContext context) => MapWidget(injector.get<MarkerService>(), injector.get<PreferencesService>()),
+      '/': (BuildContext context) =>
+          MapWidget(injector.get<MarkerService>(), injector.get<PreferencesService>(), injector.get<PositionService>()),
       '/chat-list': (BuildContext context) => ChatListView(injector.get<ChatItemService>()),
       '/chat': (BuildContext context) => ChatView(injector.get<ChatMessageService>()),
       '/registration': (BuildContext context) =>
@@ -38,7 +38,8 @@ class MyApp extends StatelessWidget {
 class ModuleContainer {
   Injector initialise(Injector injector, Environment env) {
     injector.map<EnvSettings>((i) => env.settings, isSingleton: true);
-    injector.map<PositionService>((i) => PositionService(i.get<PreferencesService>()), isSingleton: true);
+    injector.map<PositionService>((i) => PositionService(i.get<PreferencesService>(), i.get<MapClient>()),
+        isSingleton: true);
     injector.map<PreferencesService>((i) => PreferencesService(), isSingleton: true);
     injector.map<ChatClient>((i) => ChatClient(Dio()), isSingleton: true);
     injector.map<MapClient>((i) => MapClient(Dio()), isSingleton: true);

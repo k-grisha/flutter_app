@@ -6,9 +6,8 @@ class PointDto {
   final String uuid;
   final int lat;
   final int lon;
-  final String name;
 
-  PointDto(this.uuid, this.lat, this.lon, this.name);
+  PointDto(this.uuid, this.lat, this.lon);
 
   factory PointDto.fromJson(Map<String, dynamic> json) => _$PointDtoFromJson(json);
   Map<String, dynamic> toJson() => _$PointDtoToJson(this);

@@ -11,7 +11,6 @@ PointDto _$PointDtoFromJson(Map<String, dynamic> json) {
     json['uuid'] as String,
     json['lat'] as int,
     json['lon'] as int,
-    json['name'] as String,
   );
 }
 
@@ -19,5 +18,4 @@ Map<String, dynamic> _$PointDtoToJson(PointDto instance) => <String, dynamic>{
       'uuid': instance.uuid,
       'lat': instance.lat,
       'lon': instance.lon,
-      'name': instance.name,
     };
