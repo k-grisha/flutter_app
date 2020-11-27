@@ -40,8 +40,17 @@ class ChatMessageService {
     _messages.sort((a, b) => b.received.compareTo(a.received));
   }
 
-  runMessageUpdater() async {
+  Future<List<ChatMessage>> getAllMessages(String sender) async {
+    String uuid = await _preferences.getUuid();
+    if (uuid == null) {
+      return null;
+    }
+    var res = await _messageRepository.getAll(uuid, sender);
 
+    return res;
+  }
+
+  runMessageUpdater() async {
     while (true) {
       String uuid = await _preferences.getUuid();
       if (uuid == null) {
