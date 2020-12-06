@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_app/model/chat-message.dart';
 import 'package:flutter_app/service/chat-message-service.dart';
@@ -13,22 +14,13 @@ class ChatView extends StatefulWidget {
 }
 
 class ChatWidgetState extends State<ChatView> {
-  final String _myUuid = "501959ac-69fb-4a3b-ba81-3e47d207e019";
+  final String _myUuid = "6c7c6b48-1d0c-42c6-9e58-e81f8a6ddf51";
   String senderUuid = "8b4865d5-c480-4732-885f-958680b16d1a";
 
   final TextEditingController _eCtrl = new TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    // showDialog(
-    //   context: context,
-    //   barrierDismissible: false,
-    //   builder: (BuildContext context) {
-    //     return Center(
-    //       child: CircularProgressIndicator(),
-    //     );
-    //   },
-    // );
     return new Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -56,6 +48,7 @@ class ChatWidgetState extends State<ChatView> {
           } else {
             return Flexible(
                 child: new ListView.builder(
+                    reverse: true,
                     itemCount: snapshot.data.length,
                     itemBuilder: (context, i) {
                       return _buildRow(context, snapshot.data[i]);

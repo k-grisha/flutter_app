@@ -58,7 +58,9 @@ class MessageRepository {
     List<Map> maps = await db.query(_TABLE_MESSAGES,
         columns: [_COLUMN_ID, _COLUMN_SENDER, _COLUMN_RECIPIENT, _COLUMN_MESSAGE, _COLUMN_RECEIVED],
         where: 'recipient = ? AND sender = ?',
-        whereArgs: [recipient, sender]);
+        whereArgs: [recipient, sender],
+        orderBy: _COLUMN_ID + ' DESC'
+    );
     var res = maps.isEmpty ? null : maps.map((m) => fromMap(m)).toList();
     return res;
   }
