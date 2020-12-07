@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_app/model/chat-message.dart';
 import 'package:flutter_app/service/chat-message-service.dart';
@@ -42,9 +41,8 @@ class ChatWidgetState extends State<ChatView> {
         initialData: List(),
         builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
           if (!snapshot.hasData) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
+            return Expanded(
+                child: Text("No Messages", style: DefaultTextStyle.of(context).style.apply(fontSizeFactor: 1)));
           } else {
             return Flexible(
                 child: new ListView.builder(

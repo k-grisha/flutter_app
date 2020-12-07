@@ -61,7 +61,7 @@ class MessageRepository {
         whereArgs: [recipient, sender],
         orderBy: _COLUMN_ID + ' DESC'
     );
-    var res = maps.isEmpty ? null : maps.map((m) => fromMap(m)).toList();
+    var res = maps.isEmpty ? [] : maps.map((m) => fromMap(m)).toList();
     return res;
   }
 

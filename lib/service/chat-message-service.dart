@@ -31,9 +31,9 @@ class ChatMessageService {
     return _messages[i];
   }
 
-  int getMessageCount() {
-    return _messages.length;
-  }
+  // int getMessageCount() {
+  //   return _messages.length;
+  // }
 
   addMessage(String message) {
     _messages.add(ChatMessage(99, "a", "b", message));
