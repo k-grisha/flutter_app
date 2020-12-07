@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_app/dto/message-dto-response.dart';
+import 'package:flutter_app/dto/message-dto.dart';
 import 'package:retrofit/retrofit.dart';
 
 import '../dto/user-dto-response.dart';
@@ -16,4 +17,7 @@ abstract class ChatClient {
 
   @GET("/message/{uuid}")
   Future<MessageDtoResponse> getMessage(@Path("uuid") String uuid, @Query("lastId") int lastId);
+
+  @POST("/message/{uuid}")
+  Future<void> sendMessage(@Path("uuid") String uuid, @Body() MessageDto messageDto);
 }

@@ -54,4 +54,24 @@ class _ChatClient implements ChatClient {
     final value = MessageDtoResponse.fromJson(_result.data);
     return value;
   }
+
+  @override
+  Future<void> sendMessage(uuid, messageDto) async {
+    ArgumentError.checkNotNull(uuid, 'uuid');
+    ArgumentError.checkNotNull(messageDto, 'messageDto');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(messageDto?.toJson() ?? <String, dynamic>{});
+    _data.removeWhere((k, v) => v == null);
+    await _dio.request<void>('/message/$uuid',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    return null;
+  }
 }

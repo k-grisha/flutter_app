@@ -165,12 +165,12 @@ class MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
       };
 
   InfoWindow getInfoWindow(Cluster<MapPoint> cluster, bool isMe) {
-    var point = cluster.items.first;
+    MapPoint point = cluster.items.first;
     return InfoWindow(
         title: (isMe ? "It is me " : "My Name is ") + point.uuid,
         snippet: '*',
         onTap: () {
-          Navigator.pushNamed(context, '/chat');
+          Navigator.pushNamed(context, '/chat', arguments: point);
         });
   }
 

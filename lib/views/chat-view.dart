@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/model/chat-message.dart';
+import 'package:flutter_app/model/map-point.dart';
 import 'package:flutter_app/service/chat-message-service.dart';
 import 'package:flutter_app/service/datatime-util.dart';
 
@@ -13,17 +14,16 @@ class ChatView extends StatefulWidget {
 }
 
 class ChatWidgetState extends State<ChatView> {
-  final String _myUuid = "6c7c6b48-1d0c-42c6-9e58-e81f8a6ddf51";
-  String senderUuid = "8b4865d5-c480-4732-885f-958680b16d1a";
-
   final TextEditingController _eCtrl = new TextEditingController();
+  MapPoint opponent;
 
   @override
   Widget build(BuildContext context) {
+    opponent = ModalRoute.of(context).settings.arguments;
     return new Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title: Text('Чат c Vasia'),
+          title: Text('Чат c ' + opponent.uuid),
           backgroundColor: Colors.orange,
         ),
         body: Container(
@@ -37,7 +37,7 @@ class ChatWidgetState extends State<ChatView> {
 
   Widget getChatMessages() {
     return FutureBuilder<List>(
-        future: widget._chatMessageService.getAllMessages(senderUuid),
+        future: widget._chatMessageService.getAllMessagesFrom(opponent.uuid),
         initialData: List(),
         builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
           if (!snapshot.hasData) {
@@ -57,7 +57,7 @@ class ChatWidgetState extends State<ChatView> {
 
   Widget _buildRow(context, ChatMessage msg) {
     return Column(
-      crossAxisAlignment: msg.sender == _myUuid ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      crossAxisAlignment: msg.sender != opponent.uuid ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: <Widget>[
         Text(msg.message, style: DefaultTextStyle.of(context).style.apply(fontSizeFactor: 1)),
         Row(
@@ -119,7 +119,7 @@ class ChatWidgetState extends State<ChatView> {
         suffixIcon: IconButton(
           icon: Icon(Icons.send),
           onPressed: () {
-            widget._chatMessageService.addMessage(_eCtrl.text);
+            widget._chatMessageService.sendMessage(opponent.uuid, _eCtrl.text);
             _eCtrl.clear();
             setState(() {});
           },
