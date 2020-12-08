@@ -5,7 +5,7 @@ part 'message-dto-response.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class MessageDtoResponse {
-  final List<MessageDto> body;
+  final MessageDto body;
   final int errorCode;
   final String message;
 

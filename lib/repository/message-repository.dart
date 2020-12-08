@@ -53,12 +53,12 @@ class MessageRepository {
         await db.rawQuery("SELECT MAX(id) FROM " + _TABLE_MESSAGES + " WHERE recipient='" + uuid + "'"));
   }
 
-  Future<List<ChatMessage>> getAll(String recipient, String sender) async {
+  Future<List<ChatMessage>> getAll(String uuid1, String uuid2) async {
     final Database db = await database;
     List<Map> maps = await db.query(_TABLE_MESSAGES,
         columns: [_COLUMN_ID, _COLUMN_SENDER, _COLUMN_RECIPIENT, _COLUMN_MESSAGE, _COLUMN_RECEIVED],
-        where: 'recipient = ? AND sender = ?',
-        whereArgs: [recipient, sender],
+        where: '(recipient = ? AND sender = ?) OR (recipient = ? AND sender = ?)',
+        whereArgs: [uuid1, uuid2, uuid2, uuid1],
         orderBy: _COLUMN_ID + ' DESC'
     );
     var res = maps.isEmpty ? [] : maps.map((m) => fromMap(m)).toList();

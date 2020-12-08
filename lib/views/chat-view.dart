@@ -119,7 +119,7 @@ class ChatWidgetState extends State<ChatView> {
         suffixIcon: IconButton(
           icon: Icon(Icons.send),
           onPressed: () {
-            widget._chatMessageService.sendMessage(opponent.uuid, _eCtrl.text);
+            widget._chatMessageService.sendAndSaveMessage(opponent.uuid, _eCtrl.text);
             _eCtrl.clear();
             setState(() {});
           },

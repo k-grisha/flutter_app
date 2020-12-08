@@ -8,10 +8,9 @@ part of 'message-dto-response.dart';
 
 MessageDtoResponse _$MessageDtoResponseFromJson(Map<String, dynamic> json) {
   return MessageDtoResponse(
-    (json['body'] as List)
-        ?.map((e) =>
-            e == null ? null : MessageDto.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
+    json['body'] == null
+        ? null
+        : MessageDto.fromJson(json['body'] as Map<String, dynamic>),
     json['errorCode'] as int,
     json['message'] as String,
   );
@@ -19,7 +18,7 @@ MessageDtoResponse _$MessageDtoResponseFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$MessageDtoResponseToJson(MessageDtoResponse instance) =>
     <String, dynamic>{
-      'body': instance.body?.map((e) => e?.toJson())?.toList(),
+      'body': instance.body?.toJson(),
       'errorCode': instance.errorCode,
       'message': instance.message,
     };

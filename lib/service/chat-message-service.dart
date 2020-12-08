@@ -1,4 +1,5 @@
 import 'package:flutter_app/client/chat-clietn.dart';
+import 'package:flutter_app/dto/message-dto-response.dart';
 import 'package:flutter_app/dto/message-dto.dart';
 import 'package:flutter_app/model/chat-message.dart';
 import 'package:flutter_app/repository/message-repository.dart';
@@ -36,9 +37,15 @@ class ChatMessageService {
   //   return _messages.length;
   // }
 
-  sendMessage(String recipient, String message) async {
+  sendAndSaveMessage(String recipient, String message) async {
     String uuid = await _preferences.getUuid();
-    _chatClient.sendMessage(uuid, MessageDto(uuid, recipient, message));
+    MessageDtoResponse response = await _chatClient.sendMessage(uuid, MessageDto(uuid, recipient, message));
+    if (response.errorCode != 0) {
+      logger.w(response.message);
+    } else {
+      _messageRepository.save(ChatMessage(
+          response.body.id, response.body.sender, response.body.recipient, response.body.message, DateTime.now()));
+    }
   }
 
   Future<List<ChatMessage>> getAllMessagesFrom(String sender) async {

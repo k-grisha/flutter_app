@@ -37,7 +37,7 @@ class _ChatClient implements ChatClient {
   }
 
   @override
-  Future<MessageDtoResponse> getMessage(uuid, lastId) async {
+  Future<MessagesDtoResponse> getMessage(uuid, lastId) async {
     ArgumentError.checkNotNull(uuid, 'uuid');
     ArgumentError.checkNotNull(lastId, 'lastId');
     const _extra = <String, dynamic>{};
@@ -51,12 +51,12 @@ class _ChatClient implements ChatClient {
             extra: _extra,
             baseUrl: baseUrl),
         data: _data);
-    final value = MessageDtoResponse.fromJson(_result.data);
+    final value = MessagesDtoResponse.fromJson(_result.data);
     return value;
   }
 
   @override
-  Future<void> sendMessage(uuid, messageDto) async {
+  Future<MessageDtoResponse> sendMessage(uuid, messageDto) async {
     ArgumentError.checkNotNull(uuid, 'uuid');
     ArgumentError.checkNotNull(messageDto, 'messageDto');
     const _extra = <String, dynamic>{};
@@ -64,7 +64,7 @@ class _ChatClient implements ChatClient {
     final _data = <String, dynamic>{};
     _data.addAll(messageDto?.toJson() ?? <String, dynamic>{});
     _data.removeWhere((k, v) => v == null);
-    await _dio.request<void>('/message/$uuid',
+    final _result = await _dio.request<Map<String, dynamic>>('/message/$uuid',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'POST',
@@ -72,6 +72,7 @@ class _ChatClient implements ChatClient {
             extra: _extra,
             baseUrl: baseUrl),
         data: _data);
-    return null;
+    final value = MessageDtoResponse.fromJson(_result.data);
+    return value;
   }
 }
