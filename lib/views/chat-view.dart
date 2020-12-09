@@ -35,6 +35,29 @@ class ChatWidgetState extends State<ChatView> {
         ));
   }
 
+  @override
+  void initState() {
+    widget._chatMessageService.addListener(refresh);
+  }
+
+  refresh() {
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    widget._chatMessageService.removeListeners();
+    _eCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
   Widget getChatMessages() {
     return FutureBuilder<List>(
         future: widget._chatMessageService.getAllMessagesFrom(opponent.uuid),
@@ -126,12 +149,5 @@ class ChatWidgetState extends State<ChatView> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    // Clean up the controller when the widget is disposed.
-    _eCtrl.dispose();
-    super.dispose();
   }
 }

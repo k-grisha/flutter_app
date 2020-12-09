@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_app/client/chat-clietn.dart';
 import 'package:flutter_app/dto/message-dto-response.dart';
 import 'package:flutter_app/dto/message-dto.dart';
@@ -8,34 +10,21 @@ import 'package:logger/logger.dart';
 import 'preferences-service.dart';
 
 class ChatMessageService {
-  final List<ChatMessage> _messages = [
-    ChatMessage(1, "b", "a", "hallo", DateTime.now().subtract(Duration(minutes: 12))),
-    ChatMessage(2, "b", "a", "How are you?", DateTime.now().subtract(Duration(minutes: 7))),
-    ChatMessage(3, "a", "b", "hi", DateTime.now().subtract(Duration(minutes: 2))),
-    ChatMessage(4, "a", "b", "I fine"),
-    ChatMessage(5, "a", "b", "I fine1"),
-    ChatMessage(6, "b", "a", "I fine669"),
-  ];
   final MessageRepository _messageRepository;
   final ChatClient _chatClient;
   final PreferencesService _preferences;
   var logger = Logger();
+  final List<Function> _messageListeners = new List();
 
-  ChatMessageService(this._messageRepository, this._chatClient, this._preferences) {
-    // _messageRepository.save(ChatMessage(999, "a", "b", "msg"));
-    _messages.sort((a, b) => b.received.compareTo(a.received));
+  ChatMessageService(this._messageRepository, this._chatClient, this._preferences) {}
+
+  addListener(Function listener) {
+    _messageListeners.add(listener);
   }
 
-  ChatMessage getMessagesFrom(String from, int i) {
-    if (i + 1 >= _messages.length) {
-      print("Try to fetch more message");
-    }
-    return _messages[i];
+  removeListeners() {
+    _messageListeners.clear();
   }
-
-  // int getMessageCount() {
-  //   return _messages.length;
-  // }
 
   sendAndSaveMessage(String recipient, String message) async {
     String uuid = await _preferences.getUuid();
@@ -45,6 +34,7 @@ class ChatMessageService {
     } else {
       _messageRepository.save(ChatMessage(
           response.body.id, response.body.sender, response.body.recipient, response.body.message, DateTime.now()));
+      updateListeners();
     }
   }
 
@@ -76,7 +66,16 @@ class ChatMessageService {
       var messages =
           messageDtoResponse.body.map((dto) => ChatMessage(dto.id, dto.sender, dto.recipient, dto.message)).toList();
       print("RECIEVE MESSAGESSS " + messages.length.toString());
+
+      updateListeners();
+
       _messageRepository.saveAll(messages);
+    }
+  }
+
+  updateListeners() {
+    for (final listener in _messageListeners) {
+      listener();
     }
   }
 }
