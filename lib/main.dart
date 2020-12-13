@@ -1,5 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/service/handlers/handlers-registry.dart';
+import 'package:flutter_app/service/handlers/impl/text-msg-handler.dart';
+import 'package:flutter_app/service/handlers/impl/unknown-msg-handler.dart';
 import 'package:flutter_app/views/chat-list-view.dart';
 import 'package:flutter_app/views/chat-view.dart';
 import 'package:flutter_app/views/map-view.dart';
@@ -48,8 +51,13 @@ class ModuleContainer {
         isSingleton: true);
     injector.map<ChatItemService>((i) => ChatItemService(), isSingleton: true);
     injector.map<MessageRepository>((i) => MessageRepository(), isSingleton: true);
+    injector.map<TextMsgHandler>((i) => TextMsgHandler(i.get<MessageRepository>()), isSingleton: true);
+    injector.map<UnknownMsgHandler>((i) => UnknownMsgHandler(), isSingleton: true);
+    injector.map<MsgHandlersRegistry>((i) => MsgHandlersRegistry(i.get<TextMsgHandler>(), i.get<UnknownMsgHandler>()),
+        isSingleton: true);
     injector.map<ChatMessageService>(
-        (i) => ChatMessageService(i.get<MessageRepository>(), i.get<ChatClient>(), i.get<PreferencesService>()),
+        (i) => ChatMessageService(
+            i.get<MessageRepository>(), i.get<ChatClient>(), i.get<PreferencesService>(), i.get<MsgHandlersRegistry>()),
         isSingleton: true);
 
     return injector;

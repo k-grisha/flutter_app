@@ -1,12 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter_app/client/chat-clietn.dart';
-import 'package:flutter_app/dto/message-dto-response.dart';
 import 'package:flutter_app/dto/message-dto.dart';
 import 'package:flutter_app/model/chat-message.dart';
+import 'package:flutter_app/model/message-type.dart';
 import 'package:flutter_app/repository/message-repository.dart';
 import 'package:logger/logger.dart';
 
+import 'handlers/handlers-registry.dart';
 import 'preferences-service.dart';
 
 class ChatMessageService {
@@ -15,8 +16,9 @@ class ChatMessageService {
   final PreferencesService _preferences;
   var logger = Logger();
   final List<Function> _messageListeners = new List();
+  final MsgHandlersRegistry _handlersRegistry;
 
-  ChatMessageService(this._messageRepository, this._chatClient, this._preferences) {}
+  ChatMessageService(this._messageRepository, this._chatClient, this._preferences, this._handlersRegistry);
 
   addListener(Function listener) {
     _messageListeners.add(listener);
@@ -28,17 +30,18 @@ class ChatMessageService {
 
   sendAndSaveMessage(String recipient, String message) async {
     String uuid = await _preferences.getUuid();
-    MessageDtoResponse response = await _chatClient.sendMessage(uuid, MessageDto(uuid, recipient, message));
-    if (response.errorCode != 0) {
-      logger.w(response.message);
+    MessageDto response =
+        await _chatClient.sendMessage(uuid, MessageDto(uuid, recipient, message, MessageType.TEXT_MSG.value));
+    if (response.id == null || response.id <= 0) {
+      logger.w(response.body);
     } else {
-      _messageRepository.save(ChatMessage(
-          response.body.id, response.body.sender, response.body.recipient, response.body.message, DateTime.now()));
+      _messageRepository
+          .save(TextMessage(response.id, response.sender, response.recipient, response.body, DateTime.now()));
       updateListeners();
     }
   }
 
-  Future<List<ChatMessage>> getAllMessagesFrom(String sender) async {
+  Future<List<TextMessage>> getAllMessagesFrom(String sender) async {
     String uuid = await _preferences.getUuid();
     if (uuid == null) {
       return null;
@@ -56,20 +59,15 @@ class ChatMessageService {
         continue;
       }
       int lastId = await _messageRepository.getMaxMessageId(uuid);
-      var messageDtoResponse = await _chatClient.getMessage(uuid, lastId == null ? 0 : lastId);
+      var messageDtos = await _chatClient.getMessage(uuid, lastId == null ? 0 : lastId);
 
-      if (messageDtoResponse.errorCode != 0) {
-        logger.w(messageDtoResponse.message);
-        return;
+      for (MessageDto msg in messageDtos) {
+        MessageType.valueOf(msg.type).getHandler(_handlersRegistry).handleMsg(msg);
       }
 
-      var messages =
-          messageDtoResponse.body.map((dto) => ChatMessage(dto.id, dto.sender, dto.recipient, dto.message)).toList();
-      print("RECIEVE MESSAGESSS " + messages.length.toString());
-
-      updateListeners();
-
-      _messageRepository.saveAll(messages);
+      if (messageDtos.length > 0) {
+        updateListeners();
+      }
     }
   }
 

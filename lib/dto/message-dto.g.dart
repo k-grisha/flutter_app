@@ -10,7 +10,8 @@ MessageDto _$MessageDtoFromJson(Map<String, dynamic> json) {
   return MessageDto(
     json['sender'] as String,
     json['recipient'] as String,
-    json['message'] as String,
+    json['body'] as String,
+    json['type'] as int,
     id: json['id'] as int,
   );
 }
@@ -20,5 +21,6 @@ Map<String, dynamic> _$MessageDtoToJson(MessageDto instance) =>
       'id': instance.id,
       'sender': instance.sender,
       'recipient': instance.recipient,
-      'message': instance.message,
+      'type': instance.type,
+      'body': instance.body,
     };

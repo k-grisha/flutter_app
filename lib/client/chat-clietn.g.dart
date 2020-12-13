@@ -17,7 +17,7 @@ class _ChatClient implements ChatClient {
   String baseUrl;
 
   @override
-  Future<UserDtoResponse> createUser(userDto) async {
+  Future<UserDto> createUser(userDto) async {
     ArgumentError.checkNotNull(userDto, 'userDto');
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -32,18 +32,18 @@ class _ChatClient implements ChatClient {
             extra: _extra,
             baseUrl: baseUrl),
         data: _data);
-    final value = UserDtoResponse.fromJson(_result.data);
+    final value = UserDto.fromJson(_result.data);
     return value;
   }
 
   @override
-  Future<MessagesDtoResponse> getMessage(uuid, lastId) async {
+  Future<List<MessageDto>> getMessage(uuid, lastId) async {
     ArgumentError.checkNotNull(uuid, 'uuid');
     ArgumentError.checkNotNull(lastId, 'lastId');
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'lastId': lastId};
     final _data = <String, dynamic>{};
-    final _result = await _dio.request<Map<String, dynamic>>('/message/$uuid',
+    final _result = await _dio.request<List<dynamic>>('/message/$uuid',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'GET',
@@ -51,12 +51,14 @@ class _ChatClient implements ChatClient {
             extra: _extra,
             baseUrl: baseUrl),
         data: _data);
-    final value = MessagesDtoResponse.fromJson(_result.data);
+    var value = _result.data
+        .map((dynamic i) => MessageDto.fromJson(i as Map<String, dynamic>))
+        .toList();
     return value;
   }
 
   @override
-  Future<MessageDtoResponse> sendMessage(uuid, messageDto) async {
+  Future<MessageDto> sendMessage(uuid, messageDto) async {
     ArgumentError.checkNotNull(uuid, 'uuid');
     ArgumentError.checkNotNull(messageDto, 'messageDto');
     const _extra = <String, dynamic>{};
@@ -72,7 +74,7 @@ class _ChatClient implements ChatClient {
             extra: _extra,
             baseUrl: baseUrl),
         data: _data);
-    final value = MessageDtoResponse.fromJson(_result.data);
+    final value = MessageDto.fromJson(_result.data);
     return value;
   }
 }

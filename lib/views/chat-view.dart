@@ -78,7 +78,7 @@ class ChatWidgetState extends State<ChatView> {
         });
   }
 
-  Widget _buildRow(context, ChatMessage msg) {
+  Widget _buildRow(context, TextMessage msg) {
     return Column(
       crossAxisAlignment: msg.sender != opponent.uuid ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: <Widget>[

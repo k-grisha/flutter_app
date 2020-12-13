@@ -74,12 +74,12 @@ class SettingsViewState extends State<SettingsView> with WidgetsBindingObserver 
 
     var createdUser = await widget.mapClient.createUser(new UserDto(_eCtrl.text));
 
-    if (createdUser.errorCode != 0) {
-      logger.w(createdUser.message);
+    if (createdUser.uuid.isEmpty) {
+      logger.w("Unable to registered new user " + _eCtrl.text);
       return;
     }
 
-    await widget._preferences.setUuid(createdUser.body.uuid);
+    await widget._preferences.setUuid(createdUser.uuid);
     Navigator.pop(context); //pop dialog
     Navigator.pop(context);
   }

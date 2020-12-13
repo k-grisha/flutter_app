@@ -1,10 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_app/dto/message-dto-response.dart';
-import 'package:flutter_app/dto/messages-dto-response.dart';
 import 'package:flutter_app/dto/message-dto.dart';
 import 'package:retrofit/retrofit.dart';
 
-import '../dto/user-dto-response.dart';
 import '../dto/user-dto.dart';
 
 part 'chat-clietn.g.dart';
@@ -14,11 +11,11 @@ abstract class ChatClient {
   factory ChatClient(Dio dio, {String baseUrl}) = _ChatClient;
 
   @POST("/user")
-  Future<UserDtoResponse> createUser(@Body() UserDto userDto);
+  Future<UserDto> createUser(@Body() UserDto userDto);
 
   @GET("/message/{uuid}")
-  Future<MessagesDtoResponse> getMessage(@Path("uuid") String uuid, @Query("lastId") int lastId);
+  Future<List<MessageDto>> getMessage(@Path("uuid") String uuid, @Query("lastId") int lastId);
 
   @POST("/message/{uuid}")
-  Future<MessageDtoResponse> sendMessage(@Path("uuid") String uuid, @Body() MessageDto messageDto);
+  Future<MessageDto> sendMessage(@Path("uuid") String uuid, @Body() MessageDto messageDto);
 }

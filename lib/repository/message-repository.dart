@@ -29,7 +29,7 @@ class MessageRepository {
     );
   }
 
-  Future<void> save(ChatMessage message) async {
+  Future<void> save(TextMessage message) async {
     final Database db = await database;
     await db.insert(
       _TABLE_MESSAGES,
@@ -38,7 +38,7 @@ class MessageRepository {
     );
   }
 
-  Future<void> saveAll(List<ChatMessage> messages) async {
+  Future<void> saveAll(List<TextMessage> messages) async {
     final Database db = await database;
     var batch = db.batch();
     messages.forEach((msg) {
@@ -53,7 +53,7 @@ class MessageRepository {
         await db.rawQuery("SELECT MAX(id) FROM " + _TABLE_MESSAGES + " WHERE recipient='" + uuid + "'"));
   }
 
-  Future<List<ChatMessage>> getAll(String uuid1, String uuid2) async {
+  Future<List<TextMessage>> getAll(String uuid1, String uuid2) async {
     final Database db = await database;
     List<Map> maps = await db.query(_TABLE_MESSAGES,
         columns: [_COLUMN_ID, _COLUMN_SENDER, _COLUMN_RECIPIENT, _COLUMN_MESSAGE, _COLUMN_RECEIVED],
@@ -65,12 +65,12 @@ class MessageRepository {
     return res;
   }
 
-  ChatMessage fromMap(Map<String, dynamic> map) {
-    return ChatMessage(map[_COLUMN_ID], map[_COLUMN_SENDER], map[_COLUMN_RECIPIENT], map[_COLUMN_MESSAGE],
+  TextMessage fromMap(Map<String, dynamic> map) {
+    return TextMessage(map[_COLUMN_ID], map[_COLUMN_SENDER], map[_COLUMN_RECIPIENT], map[_COLUMN_MESSAGE],
         DateTime.parse(map[_COLUMN_RECEIVED]));
   }
 
-  Map<String, dynamic> toMap(ChatMessage chatMessage) {
+  Map<String, dynamic> toMap(TextMessage chatMessage) {
     return {
       _COLUMN_ID: chatMessage.id,
       _COLUMN_SENDER: chatMessage.sender,
