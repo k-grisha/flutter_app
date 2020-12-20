@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/model/chat-message.dart';
+import 'package:flutter_app/model/chat-user.dart';
 import 'package:flutter_app/model/map-point.dart';
 import 'package:flutter_app/service/chat-message-service.dart';
 import 'package:flutter_app/service/datatime-util.dart';
@@ -15,15 +16,15 @@ class ChatView extends StatefulWidget {
 
 class ChatWidgetState extends State<ChatView> {
   final TextEditingController _eCtrl = new TextEditingController();
-  MapPoint opponent;
+  ChatUser _opponent;
 
   @override
   Widget build(BuildContext context) {
-    opponent = ModalRoute.of(context).settings.arguments;
+    _opponent = ModalRoute.of(context).settings.arguments;
     return new Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title: Text('Чат c ' + opponent.uuid),
+          title: Text('Чат c ' + _opponent.name),
           backgroundColor: Colors.orange,
         ),
         body: Container(
@@ -60,7 +61,7 @@ class ChatWidgetState extends State<ChatView> {
 
   Widget getChatMessages() {
     return FutureBuilder<List>(
-        future: widget._chatMessageService.getAllMessagesFrom(opponent.uuid),
+        future: widget._chatMessageService.getAllMessagesFrom(_opponent.uuid),
         initialData: List(),
         builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
           if (!snapshot.hasData) {
@@ -80,7 +81,7 @@ class ChatWidgetState extends State<ChatView> {
 
   Widget _buildRow(context, TextMessage msg) {
     return Column(
-      crossAxisAlignment: msg.sender != opponent.uuid ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      crossAxisAlignment: msg.sender != _opponent.uuid ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: <Widget>[
         Text(msg.message, style: DefaultTextStyle.of(context).style.apply(fontSizeFactor: 1)),
         Row(
@@ -142,7 +143,7 @@ class ChatWidgetState extends State<ChatView> {
         suffixIcon: IconButton(
           icon: Icon(Icons.send),
           onPressed: () {
-            widget._chatMessageService.sendAndSaveMessage(opponent.uuid, _eCtrl.text);
+            widget._chatMessageService.sendAndSaveMessage(_opponent.uuid, _eCtrl.text);
             _eCtrl.clear();
             setState(() {});
           },

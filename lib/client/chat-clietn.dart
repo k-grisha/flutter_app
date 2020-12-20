@@ -13,6 +13,9 @@ abstract class ChatClient {
   @POST("/user")
   Future<UserDto> createUser(@Body() UserDto userDto);
 
+  @GET("/user/{uuid}")
+  Future<UserDto> getUser(@Path("uuid") String uuid);
+
   @GET("/message/{uuid}")
   Future<List<MessageDto>> getMessage(@Path("uuid") String uuid, @Query("lastId") int lastId);
 

@@ -2,8 +2,10 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_app/model/chat-user.dart';
 import 'package:flutter_app/service/position-service.dart';
 import 'package:flutter_app/service/preferences-service.dart';
+import 'package:flutter_app/service/user-service.dart';
 import 'package:google_maps_cluster_manager/google_maps_cluster_manager.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:logger/logger.dart';
@@ -16,9 +18,10 @@ class MapWidget extends StatefulWidget {
   final MarkerService _markerService;
   final PreferencesService _preferences;
   final PositionService _positionService;
+  final UserService _userService;
   final CameraPosition _initCameraPosition = CameraPosition(target: LatLng(52.479099, 13.373282), zoom: 9.0);
 
-  MapWidget(this._markerService, this._preferences, this._positionService);
+  MapWidget(this._markerService, this._preferences, this._positionService, this._userService);
 
   @override
   State<MapWidget> createState() => MapWidgetState();
@@ -46,9 +49,9 @@ class MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
 
   void _startUpdateMyPoint() async {
     while (true) {
-      if (isActive()) {
-        widget._positionService.updateMyPoint();
-      }
+      // if (isActive()) {
+      widget._positionService.updateMyPoint();
+      // }
       await new Future.delayed(const Duration(milliseconds: 3000));
     }
   }
@@ -97,7 +100,7 @@ class MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
   }
 
   void _updateMarkers(Set<Marker> markers) {
-    print('Updated ${markers.length} markers');
+    print('Markers Updated ${markers.length} ');
     setState(() {
       this.markers = markers;
     });
@@ -153,7 +156,7 @@ class MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
         return Marker(
           markerId: MarkerId(markerUuid),
           position: cluster.location,
-          infoWindow: cluster.isMultiple ? null : getInfoWindow(cluster, isMe),
+          infoWindow: cluster.isMultiple ? null : await getInfoWindow(cluster, isMe),
           onTap: () {
             if (!cluster.isMultiple && !isMe) {
               _onMarkerTapped(cluster);
@@ -164,13 +167,17 @@ class MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
         );
       };
 
-  InfoWindow getInfoWindow(Cluster<MapPoint> cluster, bool isMe) {
+  Future<InfoWindow> getInfoWindow(Cluster<MapPoint> cluster, bool isMe) async {
     MapPoint point = cluster.items.first;
+    if (isMe) {
+      return InfoWindow(title: "It is me " + point.uuid, snippet: '*');
+    }
+    ChatUser user = await widget._userService.getUser( point.uuid);
     return InfoWindow(
-        title: (isMe ? "It is me " : "My Name is ") + point.uuid,
+        title: "My Name is " + user.name,
         snippet: '*',
         onTap: () {
-          Navigator.pushNamed(context, '/chat', arguments: point);
+          Navigator.pushNamed(context, '/chat', arguments: user);
         });
   }
 

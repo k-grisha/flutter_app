@@ -29,6 +29,9 @@ class ChatMessageService {
   }
 
   sendAndSaveMessage(String recipient, String message) async {
+    if (message.trim().isEmpty) {
+      return;
+    }
     String uuid = await _preferences.getUuid();
     MessageDto response =
         await _chatClient.sendMessage(uuid, MessageDto(uuid, recipient, message, MessageType.TEXT_MSG.value));

@@ -1,7 +1,7 @@
-import 'package:flutter/widgets.dart';
 import 'package:flutter_app/model/chat-message.dart';
-import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+
+import 'db-helper.dart';
 
 class MessageRepository {
   static const String _TABLE_MESSAGES = "messages";
@@ -13,21 +13,21 @@ class MessageRepository {
   Future<Database> database;
 
   MessageRepository() {
-    database = initDbConnection();
+    database = DbHelper.initDbConnection();
   }
 
-  Future<Database> initDbConnection() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    return openDatabase(
-      join(await getDatabasesPath(), 'messages_database4.db'),
-      onCreate: (db, version) {
-        return db.execute(
-          'CREATE TABLE $_TABLE_MESSAGES ($_COLUMN_ID INTEGER PRIMARY KEY, $_COLUMN_SENDER CHARACTER(36), $_COLUMN_RECIPIENT CHARACTER(36), $_COLUMN_MESSAGE TEXT, $_COLUMN_RECEIVED TEXT)',
-        );
-      },
-      version: 1,
-    );
-  }
+  // Future<Database> initDbConnection() async {
+  //   WidgetsFlutterBinding.ensureInitialized();
+  //   return openDatabase(
+  //     join(await getDatabasesPath(), 'messages_database4.db'),
+  //     onCreate: (db, version) {
+  //       return db.execute(
+  //         'CREATE TABLE $_TABLE_MESSAGES ($_COLUMN_ID INTEGER PRIMARY KEY, $_COLUMN_SENDER CHARACTER(36), $_COLUMN_RECIPIENT CHARACTER(36), $_COLUMN_MESSAGE TEXT, $_COLUMN_RECEIVED TEXT)',
+  //       );
+  //     },
+  //     version: 1,
+  //   );
+  // }
 
   Future<void> save(TextMessage message) async {
     final Database db = await database;
@@ -59,8 +59,7 @@ class MessageRepository {
         columns: [_COLUMN_ID, _COLUMN_SENDER, _COLUMN_RECIPIENT, _COLUMN_MESSAGE, _COLUMN_RECEIVED],
         where: '(recipient = ? AND sender = ?) OR (recipient = ? AND sender = ?)',
         whereArgs: [uuid1, uuid2, uuid2, uuid1],
-        orderBy: _COLUMN_ID + ' DESC'
-    );
+        orderBy: _COLUMN_ID + ' DESC');
     var res = maps.isEmpty ? [] : maps.map((m) => fromMap(m)).toList();
     return res;
   }

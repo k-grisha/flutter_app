@@ -37,6 +37,24 @@ class _ChatClient implements ChatClient {
   }
 
   @override
+  Future<UserDto> getUser(uuid) async {
+    ArgumentError.checkNotNull(uuid, 'uuid');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.request<Map<String, dynamic>>('/user/$uuid',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'GET',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = UserDto.fromJson(_result.data);
+    return value;
+  }
+
+  @override
   Future<List<MessageDto>> getMessage(uuid, lastId) async {
     ArgumentError.checkNotNull(uuid, 'uuid');
     ArgumentError.checkNotNull(lastId, 'lastId');

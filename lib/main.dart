@@ -12,11 +12,13 @@ import 'client/chat-clietn.dart';
 import 'client/map-client.dart';
 import 'environment.dart';
 import 'repository/message-repository.dart';
+import 'repository/user-repository.dart';
 import 'service/chat-item-service.dart';
 import 'service/chat-message-service.dart';
 import 'service/marker-service.dart';
 import 'service/position-service.dart';
 import 'service/preferences-service.dart';
+import 'service/user-service.dart';
 import 'views/settings-view.dart';
 
 void main() {
@@ -29,8 +31,8 @@ class MyApp extends StatelessWidget {
     var injector = ModuleContainer().initialise(Injector(), Environment.DEV);
     injector.get<ChatMessageService>().runMessageUpdater();
     return MaterialApp(initialRoute: '/', routes: {
-      '/': (BuildContext context) =>
-          MapWidget(injector.get<MarkerService>(), injector.get<PreferencesService>(), injector.get<PositionService>()),
+      '/': (BuildContext context) => MapWidget(injector.get<MarkerService>(), injector.get<PreferencesService>(),
+          injector.get<PositionService>(), injector.get<UserService>()),
       '/chat-list': (BuildContext context) => ChatListView(injector.get<ChatItemService>()),
       '/chat': (BuildContext context) => ChatView(injector.get<ChatMessageService>()),
       '/registration': (BuildContext context) =>
@@ -51,7 +53,9 @@ class ModuleContainer {
         isSingleton: true);
     injector.map<ChatItemService>((i) => ChatItemService(), isSingleton: true);
     injector.map<MessageRepository>((i) => MessageRepository(), isSingleton: true);
+    injector.map<UserRepository>((i) => UserRepository(), isSingleton: true);
     injector.map<TextMsgHandler>((i) => TextMsgHandler(i.get<MessageRepository>()), isSingleton: true);
+    injector.map<UserService>((i) => UserService(i.get<ChatClient>(), i.get<UserRepository>()), isSingleton: true);
     injector.map<UnknownMsgHandler>((i) => UnknownMsgHandler(), isSingleton: true);
     injector.map<MsgHandlersRegistry>((i) => MsgHandlersRegistry(i.get<TextMsgHandler>(), i.get<UnknownMsgHandler>()),
         isSingleton: true);
