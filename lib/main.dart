@@ -51,7 +51,8 @@ class ModuleContainer {
     injector.map<MapClient>((i) => MapClient(Dio()), isSingleton: true);
     injector.map<MarkerService>((i) => MarkerService(i.get<MapClient>(), i.get<PreferencesService>()),
         isSingleton: true);
-    injector.map<ChatItemService>((i) => ChatItemService(), isSingleton: true);
+    injector.map<ChatItemService>((i) => ChatItemService(i.get<UserRepository>(), i.get<PreferencesService>()),
+        isSingleton: true);
     injector.map<MessageRepository>((i) => MessageRepository(), isSingleton: true);
     injector.map<UserRepository>((i) => UserRepository(), isSingleton: true);
     injector.map<TextMsgHandler>((i) => TextMsgHandler(i.get<MessageRepository>()), isSingleton: true);

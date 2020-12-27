@@ -172,7 +172,7 @@ class MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
     if (isMe) {
       return InfoWindow(title: "It is me " + point.uuid, snippet: '*');
     }
-    ChatUser user = await widget._userService.getUser( point.uuid);
+    ChatUser user = await widget._userService.getUser(point.uuid);
     return InfoWindow(
         title: "My Name is " + user.name,
         snippet: '*',

@@ -1,36 +1,27 @@
 import 'dart:collection';
 
 import 'package:flutter_app/model/chat-item.dart';
+import 'package:flutter_app/repository/user-repository.dart';
 import 'package:intl/intl.dart';
 
-class ChatItemService {
-  final Set<ChatItem> _items = HashSet.of([
-    ChatItem("Iwan", "Hello! what is you name?", DateTime.now().subtract(Duration(minutes: 1))),
-    ChatItem("Гриша", "Приветк! Как дела?", DateTime.now().subtract(Duration(minutes: 2))),
-    ChatItem("Степан", "Хочу написать тебе большое сообщение. ", DateTime.now().subtract(Duration(minutes: 3))),
-    ChatItem("Stepa", "Сообщение от степы", DateTime.now().subtract(Duration(minutes: 4))),
-    ChatItem("Иванова-Сидр-Петровна", "Хай!", DateTime.now().subtract(Duration(minutes: 5))),
-    ChatItem("Grisha", "Hello! what is you name?", DateTime.now().subtract(Duration(minutes: 6))),
-    ChatItem("Гриша", "Приветк! Как дела?", DateTime.now().subtract(Duration(minutes: 7)), 8),
-    ChatItem("Степан", "Хочу написать тебе большое сообщение. ", DateTime.now().subtract(Duration(minutes: 8))),
-    ChatItem("Stepa", "Сообщение от степы", DateTime.now().subtract(Duration(minutes: 9))),
-    ChatItem("Иванова-Сидр-Петровна", "Хай!", DateTime.now().subtract(Duration(minutes: 10))),
-    ChatItem("Grisha2", "Hello! what is you name?", DateTime.now().subtract(Duration(minutes: 11))),
-    ChatItem("Иванова-Сидр-Петровна", "Хай!", DateTime.now().subtract(Duration(days: 1)), 5),
-    ChatItem("Гриша", "Приветк! Как дела?", DateTime.now().subtract(Duration(days: 13))),
-    ChatItem("Grisha3", "Hello! what is you name?", DateTime.now().subtract(Duration(days: 50))),
-    ChatItem("Степан", "Хочу написать тебе большое сообщение. ", DateTime.now().subtract(Duration(days: 150))),
-    ChatItem("Иванова-Сидр-Петровна4", "Хай!", DateTime.now().subtract(Duration(days: 160)), 2),
-  ]);
+import 'preferences-service.dart';
 
-  List<ChatItem> getAllItems() {
-    var result = new List<ChatItem>.of(_items);
+class ChatItemService {
+  final UserRepository _userRepository;
+  final PreferencesService _preferences;
+
+  ChatItemService(this._userRepository, this._preferences);
+
+  Future<List<ChatItem>> getAllItems() async {
+    String uuid = await _preferences.getUuid();
+    var result = await _userRepository.getChatList(uuid);
     result.sort((a, b) => b.lastMessageTime.compareTo(a.lastMessageTime));
     return result;
   }
 
-  int getSize() {
-    return _items.length;
-  }
+  // Future<int> getSize() async {
+  //   String uuid = await _preferences.getUuid();
+  //   return (await _userRepository.getChatList(uuid)).length;
+  // }
 
 }

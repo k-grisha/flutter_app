@@ -101,36 +101,6 @@ class ChatWidgetState extends State<ChatView> {
     );
   }
 
-  // Widget getChatMessages2() {
-  //   return Flexible(
-  //     child: ListView.builder(
-  //       reverse: true,
-  //       itemCount: widget._chatMessageService.getMessageCount(),
-  //       itemBuilder: (context, index) {
-  //         var msg = widget._chatMessageService.getMessagesFrom(_opponentUuid, index);
-  //         return Column(
-  //           crossAxisAlignment: msg.sender == _myUuid ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-  //           children: <Widget>[
-  //             Text(msg.message, style: DefaultTextStyle.of(context).style.apply(fontSizeFactor: 1)),
-  //             Row(
-  //               mainAxisSize: MainAxisSize.min,
-  //               children: [
-  //                 Text(DateTimeUtil.getFormattedTime(msg.received),
-  //                     style: DefaultTextStyle.of(context).style.apply(fontSizeFactor: 0.8)),
-  //                 Icon(
-  //                   Icons.done_all,
-  //                   size: 17.0,
-  //                   color: Colors.orange,
-  //                 )
-  //               ],
-  //             ),
-  //             Divider(),
-  //           ],
-  //         );
-  //       },
-  //     ),
-  //   );
-  // }
 
   Widget getSendMessageFormWidget() {
     return TextField(

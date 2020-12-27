@@ -4,35 +4,22 @@ import 'package:sqflite/sqflite.dart';
 import 'db-helper.dart';
 
 class MessageRepository {
-  static const String _TABLE_MESSAGES = "messages";
-  static const String _COLUMN_ID = "id";
-  static const String _COLUMN_SENDER = "sender";
-  static const String _COLUMN_RECIPIENT = "recipient";
-  static const String _COLUMN_MESSAGE = "message";
-  static const String _COLUMN_RECEIVED = "received";
+  static const String TABLE_MESSAGES = "messages";
+  static const String COLUMN_ID = "id";
+  static const String COLUMN_SENDER = "sender";
+  static const String COLUMN_RECIPIENT = "recipient";
+  static const String COLUMN_MESSAGE = "message";
+  static const String COLUMN_RECEIVED = "received";
   Future<Database> database;
 
   MessageRepository() {
     database = DbHelper.initDbConnection();
   }
 
-  // Future<Database> initDbConnection() async {
-  //   WidgetsFlutterBinding.ensureInitialized();
-  //   return openDatabase(
-  //     join(await getDatabasesPath(), 'messages_database4.db'),
-  //     onCreate: (db, version) {
-  //       return db.execute(
-  //         'CREATE TABLE $_TABLE_MESSAGES ($_COLUMN_ID INTEGER PRIMARY KEY, $_COLUMN_SENDER CHARACTER(36), $_COLUMN_RECIPIENT CHARACTER(36), $_COLUMN_MESSAGE TEXT, $_COLUMN_RECEIVED TEXT)',
-  //       );
-  //     },
-  //     version: 1,
-  //   );
-  // }
-
   Future<void> save(TextMessage message) async {
     final Database db = await database;
     await db.insert(
-      _TABLE_MESSAGES,
+      TABLE_MESSAGES,
       toMap(message),
       conflictAlgorithm: ConflictAlgorithm.fail,
     );
@@ -42,7 +29,7 @@ class MessageRepository {
     final Database db = await database;
     var batch = db.batch();
     messages.forEach((msg) {
-      batch.insert(_TABLE_MESSAGES, toMap(msg));
+      batch.insert(TABLE_MESSAGES, toMap(msg));
     });
     await batch.commit(noResult: true);
   }
@@ -50,32 +37,32 @@ class MessageRepository {
   Future<int> getMaxMessageId(String uuid) async {
     final Database db = await database;
     return Sqflite.firstIntValue(
-        await db.rawQuery("SELECT MAX(id) FROM " + _TABLE_MESSAGES + " WHERE recipient='" + uuid + "'"));
+        await db.rawQuery("SELECT MAX(id) FROM " + TABLE_MESSAGES + " WHERE recipient='" + uuid + "'"));
   }
 
   Future<List<TextMessage>> getAll(String uuid1, String uuid2) async {
     final Database db = await database;
-    List<Map> maps = await db.query(_TABLE_MESSAGES,
-        columns: [_COLUMN_ID, _COLUMN_SENDER, _COLUMN_RECIPIENT, _COLUMN_MESSAGE, _COLUMN_RECEIVED],
+    List<Map> maps = await db.query(TABLE_MESSAGES,
+        columns: [COLUMN_ID, COLUMN_SENDER, COLUMN_RECIPIENT, COLUMN_MESSAGE, COLUMN_RECEIVED],
         where: '(recipient = ? AND sender = ?) OR (recipient = ? AND sender = ?)',
         whereArgs: [uuid1, uuid2, uuid2, uuid1],
-        orderBy: _COLUMN_ID + ' DESC');
+        orderBy: COLUMN_ID + ' DESC');
     var res = maps.isEmpty ? [] : maps.map((m) => fromMap(m)).toList();
     return res;
   }
 
   TextMessage fromMap(Map<String, dynamic> map) {
-    return TextMessage(map[_COLUMN_ID], map[_COLUMN_SENDER], map[_COLUMN_RECIPIENT], map[_COLUMN_MESSAGE],
-        DateTime.parse(map[_COLUMN_RECEIVED]));
+    return TextMessage(map[COLUMN_ID], map[COLUMN_SENDER], map[COLUMN_RECIPIENT], map[COLUMN_MESSAGE],
+        DateTime.parse(map[COLUMN_RECEIVED]));
   }
 
   Map<String, dynamic> toMap(TextMessage chatMessage) {
     return {
-      _COLUMN_ID: chatMessage.id,
-      _COLUMN_SENDER: chatMessage.sender,
-      _COLUMN_RECIPIENT: chatMessage.recipient,
-      _COLUMN_MESSAGE: chatMessage.message,
-      _COLUMN_RECEIVED: chatMessage.received.toIso8601String(),
+      COLUMN_ID: chatMessage.id,
+      COLUMN_SENDER: chatMessage.sender,
+      COLUMN_RECIPIENT: chatMessage.recipient,
+      COLUMN_MESSAGE: chatMessage.message,
+      COLUMN_RECEIVED: chatMessage.received.toIso8601String(),
     };
   }
 }
